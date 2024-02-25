@@ -1,20 +1,37 @@
 package com.btv.app.book;
 
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "book")
 public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "isbn", nullable = false, unique = true, length = 13)
     private String ISBN;
+    @Column(name = "b_name", nullable = false, length = 100)
     private String name;
+    @Column(name = "author", nullable = false, length = 100)
     private String author;
+    @Column(name = "publisher", nullable = false, length = 100)
     private String publisher;
+    @Column(name = "publish_year", nullable = false)
     private Integer publishYear;
+    @Column(name = "b_description", nullable = false, length = 1000)
     private String description;
-    private List<String> genre;
+    @Column(name = "genre", nullable = false)
+    private String genre;
+    @Column(name = "price", nullable = false)
     private Integer price;
-    private Integer quantity                                                                                                                                                                                                                          ;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+    @Column(name = "borrowed", nullable = false, columnDefinition = "integer default 0")
     private Integer borrowed;
+    @Column(name = "image")
     private String image;
 
     public Book() {
@@ -26,7 +43,7 @@ public class Book {
                 String publisher,
                 Integer publishYear,
                 String description,
-                List<String> genre,
+                String genre,
                 Integer price,
                 Integer quantity,
                 Integer borrowed,
@@ -51,7 +68,7 @@ public class Book {
                 String publisher,
                 Integer publishYear,
                 String description,
-                List<String> genre,
+                String genre,
                 Integer price,
                 Integer quantity,
                 Integer borrowed,
@@ -126,11 +143,11 @@ public class Book {
         this.description = description;
     }
 
-    public List<String> getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(ArrayList<String> genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 

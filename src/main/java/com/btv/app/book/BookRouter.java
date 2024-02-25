@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @RestController
 @RequestMapping("api/book")
+
 public class BookRouter {
-    @Autowired
     private final BookController bookController;
+    @Autowired
     public BookRouter(BookController bookController) {
         this.bookController = bookController;
     }
@@ -21,8 +23,8 @@ public class BookRouter {
         return bookController.getAllBooks();
     }
 
-    @GetMapping("/getBookByISBN/{ISBN}")
-    public Book getBookByISBN(@PathVariable("ISBN") String ISBN){
-        return bookController.getBookByISBN(ISBN);
+    @GetMapping("/getBookByID/{id}")
+    public Book getBookByID(@PathVariable("id") Long id){
+        return bookController.getBookByID(id);
     }
 }
