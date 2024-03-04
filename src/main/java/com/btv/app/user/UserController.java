@@ -1,30 +1,31 @@
-package com.btv.app.book;
+package com.btv.app.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
 @Component
-public class BookController {
-    private final BookService bookService;
+public class UserController {
+    private final UserService userService;
 
     @Autowired
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    public List<Book> getAllBooks(){
+    public List<User> getAllUsers(){
         try {
-            return bookService.getAllBooks();
+            return userService.getAllUsers();
         } catch (Exception e) {
             System.out.println(e);
             return null;
         }
     }
 
-    public Book getBookByID(Long id){
+    public User getUserByID(Long id){
         try{
-            return bookService.getBookByID(id);
+            return userService.getUserByID(id);
         } catch (Exception e) {
             System.out.println(e);
             return null;
