@@ -41,7 +41,34 @@ public class Membership {
         this.maxRenewal = membership.getMaxRenewal();
         this.reserve = membership.getReserve();
         this.duration = membership.getDuration();
+    }
 
+    public Membership(Integer type){
+        if(type == 1){
+            this.id = 1L;
+            this.type = "Regular";
+            this.membershipFee = 30;
+            this.maxBook = 3;
+            this.maxRenewal = 2;
+            this.reserve = 2;
+            this.duration = 12;
+        } else if(type == 2){
+            this.id = 2L;
+            this.type = "Premium";
+            this.membershipFee = 50;
+            this.maxBook = 5;
+            this.maxRenewal = 3;
+            this.reserve = 3;
+            this.duration = 12;
+        } else if(type == 3){
+            this.id = 3L;
+            this.type = "Premium";
+            this.membershipFee = 20;
+            this.maxBook = 4;
+            this.maxRenewal = 2;
+            this.reserve = 1;
+            this.duration = 6;
+        }
     }
 
     public Long getId() {

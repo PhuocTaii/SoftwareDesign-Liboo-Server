@@ -34,8 +34,27 @@ public class UserController {
     public User getUserByID(Long id){
         try{
             User tmp = userService.getUserByID(id);
-            User resUser = new User(tmp);
-            return resUser;
+            return new User(tmp);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public User addUser(User user){
+        try{
+            User tmp = userService.addUser(user);
+            return new User(tmp);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public PremiumUser addPremiumUser(PremiumUser premiumUser){
+        try{
+            PremiumUser tmp = userService.addPremiumUser(premiumUser);
+            return new PremiumUser(tmp);
         } catch (Exception e) {
             System.out.println(e);
             return null;

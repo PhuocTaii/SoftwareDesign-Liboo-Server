@@ -1,9 +1,6 @@
     package com.btv.app.user;
-
     import com.btv.app.membership.Membership;
-    import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     import jakarta.persistence.*;
-
     import java.time.LocalDate;
 
     @Entity
@@ -11,7 +8,7 @@
     @DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
     @Table(name = "user")
     @DiscriminatorValue("user")
-    public class User {
+    public class User{
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,20 +38,22 @@
         @Column(name = "is_admin", columnDefinition = "boolean default false")
         protected Boolean isAdmin;
 
-        public User() {
-        }
-
-        @PrePersist
-        protected void onCreate() {
-            joinedDate = LocalDate.now();
-        }
-
         @Column(name = "photo")
         protected String photo;
 
         @ManyToOne
         @JoinColumn(name = "membership_id")
-        private Membership membership;
+        protected Membership membership;
+
+        public User() {
+            membership = new Membership(1);
+        }
+
+        @PrePersist
+        protected void onCreate() {
+            joinedDate = LocalDate.now();
+            isAdmin = false;
+        }
 
         public User(Long id, String username, String password, String email, String name, String address, String phone, LocalDate joinedDate, Boolean isAdmin, String photo, Membership membership) {
             this.id = id;
@@ -176,12 +175,23 @@
     @Entity
     @DiscriminatorValue("premium")
     class PremiumUser extends User {
+        PremiumUser() {
+            membership = new Membership(2);
+        }
+        PremiumUser(PremiumUser tmp){
+            super(tmp);
+        }
     }
 
     @Entity
     @DiscriminatorValue("student")
     class Student extends User {
-
+        Student() {
+            membership = new Membership(3);
+        }
+        Student(Student tmp){
+            super(tmp);
+        }
     }
 
     @Entity
@@ -189,5 +199,8 @@
     class Admin extends User {
         Admin() {
             isAdmin = true;
+        }
+        Admin(Admin tmp){
+            super(tmp);
         }
     }
