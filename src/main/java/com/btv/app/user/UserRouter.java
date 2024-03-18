@@ -3,7 +3,6 @@ package com.btv.app.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,8 +29,19 @@ public class UserRouter {
         return userController.addUser(user);
     }
 
+    @PutMapping("/modifyUser/{id}")
+    public User modifyUser(@PathVariable("id") Long id, @ModelAttribute User user){
+        return userController.modifyUser(id, user);
+    }
+
+    @DeleteMapping("/deleteUser/{id}")
+    public void deleteUser(@PathVariable("id") Long id){
+        userController.deleteUser(id);
+    }
+
     @PostMapping("/addPremiumUser")
     public PremiumUser addPremiumUser(@ModelAttribute PremiumUser premiumUser){
         return userController.addPremiumUser(premiumUser);
     }
+
 }
