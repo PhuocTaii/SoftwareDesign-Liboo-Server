@@ -42,13 +42,13 @@ public class UserController {
     }
 
     public User addUser(User user){
-        try{
-            User tmp = userService.addUser(user);
-            return new User(tmp);
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
+            try{
+                User tmp = userService.addUser(user);
+                return new User(tmp);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
     }
 
     public User modifyUser(Long id, User user){

@@ -2,6 +2,7 @@ package com.btv.app.publisher;
 
 import com.btv.app.author.Author;
 import com.btv.app.author.AuthorRepository;
+import com.btv.app.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,5 +24,20 @@ public class PublisherService {
     public Publisher getPublisherByID(Long id){
         Optional<Publisher> optionalPublisher = publisherRepository.findById(id);
         return optionalPublisher.orElse(null);
+    }
+
+    public Publisher addPublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    public Publisher modifyPublisher(Publisher curPub, Publisher updatePub){
+        if(updatePub.getName() != null){
+            curPub.setName(updatePub.getName());
+        }
+        return publisherRepository.save(curPub);
+    }
+
+    public void deletePublisher(Long id){
+        publisherRepository.deleteById(id);
     }
 }

@@ -2,11 +2,9 @@ package com.btv.app.publisher;
 
 import com.btv.app.author.Author;
 import com.btv.app.author.AuthorController;
+import com.btv.app.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +25,20 @@ public class PublisherRouter {
     @GetMapping("/getPublisherByID/{id}")
     public Publisher getPublisherByID(@PathVariable("id") Long id){
         return publisherController.getPublisherByID(id);
+    }
+
+    @PostMapping("/addPublisher")
+    public Publisher addPublisher(@ModelAttribute Publisher publisher) {
+        return publisherController.addPublisher(publisher);
+    }
+
+    @PutMapping("/modifyPublisher/{id}")
+    public Publisher modifyPublisher(@PathVariable("id") Long id, @ModelAttribute Publisher publisher){
+        return publisherController.modifyPublisher(id, publisher);
+    }
+
+    @DeleteMapping("/deletePublisher/{id}")
+    public void deletePublisher(@PathVariable("id") Long id){
+        publisherController.deletePublisher(id);
     }
 }
