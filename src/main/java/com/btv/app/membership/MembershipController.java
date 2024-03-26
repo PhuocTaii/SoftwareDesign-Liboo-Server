@@ -33,4 +33,33 @@ public class MembershipController {
             return null;
         }
     }
+
+    public Membership addMembership(Membership membership) {
+        try{
+            Membership tmp = membershipService.addMembership(membership);
+            return new Membership(tmp);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public Membership modifyMembership(long id, Membership membership) {
+        try{
+            Membership curMem = membershipService.getMembershipByID(id);
+            Membership tmp = membershipService.modifyMembership(curMem, membership);
+            return new Membership(tmp);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public void deleteMembership(long id) {
+        try{
+            membershipService.deleteMembership(id);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 }
