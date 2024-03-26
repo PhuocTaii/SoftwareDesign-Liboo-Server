@@ -34,4 +34,5 @@ public class UserRouter {
     public PremiumUser addPremiumUser(@ModelAttribute PremiumUser premiumUser){
         return userController.addPremiumUser(premiumUser);
     }
+
 }

@@ -30,4 +30,13 @@ public class BookController {
             return null;
         }
     }
+
+    public Book addBook(Book book){
+        try{
+            return bookService.addBook(book);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
 }

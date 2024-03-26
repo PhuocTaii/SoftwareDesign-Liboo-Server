@@ -34,4 +34,13 @@ public class GenreController {
         }
     }
 
+    public Genre addGenre(Genre genre){
+        try{
+            return genreService.addGenre(genre);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
 }

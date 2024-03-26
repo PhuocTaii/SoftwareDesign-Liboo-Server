@@ -24,4 +24,8 @@ public class GenreService {
         Optional<Genre> optionalGenre = genreRepository.findById(id);
         return optionalGenre.orElse(null);
     }
+
+    public Genre addGenre(Genre genre){
+        return genreRepository.save(genre);
+    }
 }
