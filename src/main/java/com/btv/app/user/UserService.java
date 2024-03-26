@@ -25,6 +25,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User modifyUser(User curUser, User updateUser){
+        if(updateUser.getEmail() != null){
+            curUser.setEmail(updateUser.getEmail());
+        }
+        if(updateUser.getName() != null){
+            curUser.setName(updateUser.getName());
+        }
+        if(updateUser.getAddress() != null){
+            curUser.setAddress(updateUser.getAddress());
+        }
+        if(updateUser.getPhone() != null){
+            curUser.setPhone(updateUser.getPhone());
+        }
+        return userRepository.save(curUser);
+    }
+
+    public void deleteUser(Long id){
+        userRepository.deleteById(id);
+    }
+
     public PremiumUser addPremiumUser(PremiumUser premiumUser){
         return userRepository.save(premiumUser);
     }

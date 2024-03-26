@@ -51,6 +51,25 @@ public class UserController {
         }
     }
 
+    public User modifyUser(Long id, User user){
+        try{
+            User curUser = userService.getUserByID(id);
+            User tmp = userService.modifyUser(curUser, user);
+            return new User(tmp);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public void deleteUser(Long id){
+        try{
+            userService.deleteUser(id);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public PremiumUser addPremiumUser(PremiumUser premiumUser){
         try{
             PremiumUser tmp = userService.addPremiumUser(premiumUser);
