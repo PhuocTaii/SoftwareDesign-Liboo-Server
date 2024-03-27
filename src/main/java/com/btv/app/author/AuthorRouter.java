@@ -1,11 +1,9 @@
 package com.btv.app.author;
 
 import com.btv.app.genre.Genre;
+import com.btv.app.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +24,10 @@ public class AuthorRouter {
     @GetMapping("/getAuthorByID/{id}")
     public Author getAuthorByID(@PathVariable("id") Long id){
         return authorController.getAuthorByID(id);
+    }
+
+    @PostMapping("/addAuthor")
+    public Author addAuthor(@ModelAttribute Author author){
+        return authorController.addAuthor(author);
     }
 }

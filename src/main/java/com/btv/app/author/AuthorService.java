@@ -1,5 +1,6 @@
 package com.btv.app.author;
 
+import com.btv.app.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +22,9 @@ public class AuthorService {
     public Author getAuthorByID(Long id){
         Optional<Author> optionalAuthor = authorRepository.findById(id);
         return optionalAuthor.orElse(null);
+    }
+
+    public Author addAuthor(Author author){
+        return authorRepository.save(author);
     }
 }
