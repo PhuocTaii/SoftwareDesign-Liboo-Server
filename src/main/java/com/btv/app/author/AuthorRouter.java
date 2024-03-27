@@ -30,4 +30,14 @@ public class AuthorRouter {
     public Author addAuthor(@ModelAttribute Author author){
         return authorController.addAuthor(author);
     }
+
+    @PutMapping("/modifyAuthor/{id}")
+    public Author modifyAuthor(@PathVariable("id") Long id, @ModelAttribute Author author){
+        return authorController.modifyAuthor(id, author);
+    }
+
+    @DeleteMapping("/deleteAuthor/{id}")
+    public void deleteAuthor(@PathVariable("id") Long id){
+        authorController.deleteAuthor(id);
+    }
 }

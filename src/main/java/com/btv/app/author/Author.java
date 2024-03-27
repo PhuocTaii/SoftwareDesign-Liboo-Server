@@ -18,13 +18,6 @@ public class Author {
         this.name = tmp.name;
     }
 
-//    public long getID() {return this.id;}
-//    public String getName() {return this.name;}
-//
-//    void setId(long ID) {this.id = ID;}
-//    void setName(String NAME) {this.name = NAME;}
-
-
     public Long getId() {
         return id;
     }

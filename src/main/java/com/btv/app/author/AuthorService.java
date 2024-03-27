@@ -1,6 +1,5 @@
 package com.btv.app.author;
 
-import com.btv.app.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +25,16 @@ public class AuthorService {
 
     public Author addAuthor(Author author){
         return authorRepository.save(author);
+    }
+
+    public Author modifyAuthor(Author curAuthor, Author updateAuthor){
+        if(updateAuthor.getName() != null){
+            curAuthor.setName(updateAuthor.getName());
+        }
+        return authorRepository.save(curAuthor);
+    }
+
+    public void deleteAuthor(Long id){
+        authorRepository.deleteById(id);
     }
 }

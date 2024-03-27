@@ -41,4 +41,23 @@ public class AuthorController {
             return null;
         }
     }
+
+    public Author modifyAuthor(Long id, Author author){
+        try{
+            Author curAuthor = authorService.getAuthorByID(id);
+            Author tmp = authorService.modifyAuthor(curAuthor, author);
+            return new Author(tmp);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public void deleteAuthor(Long id){
+        try{
+            authorService.deleteAuthor(id);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 }
