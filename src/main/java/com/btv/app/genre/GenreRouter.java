@@ -2,11 +2,9 @@ package com.btv.app.genre;
 
 
 import com.btv.app.book.Book;
+import com.btv.app.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +26,20 @@ public class GenreRouter {
     @GetMapping("/getGenreByID/{id}")
     public Genre getGenreByID(@PathVariable("id") Long id){
         return genreController.getGenreByID(id);
+    }
+
+    @PostMapping("/addGenre")
+    public Genre addGenre(@ModelAttribute Genre genre){
+        return genreController.addGenre(genre);
+    }
+
+    @PutMapping("/modifyGenre/{id}")
+    public Genre modifyGenre(@PathVariable("id") Long id, @ModelAttribute Genre genre){
+        return genreController.modifyGenre(id, genre);
+    }
+
+    @DeleteMapping("/deleteGenre/{id}")
+    public void deleteGenre(@PathVariable("id") Long id){
+        genreController.deleteGenre(id);
     }
 }
