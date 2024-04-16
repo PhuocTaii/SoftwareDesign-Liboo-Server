@@ -1,11 +1,13 @@
-package com.btv.app.features.membership;
+package com.btv.app.features.membership.services;
 
+import com.btv.app.features.membership.model.Membership;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Component
+@RestController
+@RequestMapping("api/membership")
 public class MembershipController {
     private final MembershipService membershipService;
 
@@ -14,6 +16,7 @@ public class MembershipController {
         this.membershipService = membershipService;
     }
 
+    @GetMapping("/getAllMemberships")
     public List<Membership> getAllMemberships(){
         try {
             return membershipService.getAllMemberships();
@@ -23,6 +26,7 @@ public class MembershipController {
         }
     }
 
+    @GetMapping("/getMembershipByID/{id}")
     public Membership getMembershipByID(Long id){
         try{
             return membershipService.getMembershipByID(id);
@@ -32,6 +36,7 @@ public class MembershipController {
         }
     }
 
+    @PostMapping("/addMembership")
     public Membership addMembership(Membership membership) {
         try{
             Membership tmp = membershipService.addMembership(membership);
@@ -42,6 +47,7 @@ public class MembershipController {
         }
     }
 
+    @PutMapping("/modifyMembership/{id}")
     public Membership modifyMembership(long id, Membership membership) {
         try{
             Membership curMem = membershipService.getMembershipByID(id);
@@ -53,6 +59,7 @@ public class MembershipController {
         }
     }
 
+    @DeleteMapping("/deleteMembership/{id}")
     public void deleteMembership(long id) {
         try{
             membershipService.deleteMembership(id);

@@ -1,4 +1,4 @@
-package com.btv.app.features.membership;
+package com.btv.app.features.membership.model;
 
 import jakarta.persistence.*;
 

@@ -1,5 +1,6 @@
-package com.btv.app.features.membership;
+package com.btv.app.features.membership.services;
 
+import com.btv.app.features.membership.model.Membership;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

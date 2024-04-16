@@ -1,7 +1,7 @@
 package com.btv.app.features.user.models;
 
 
-import com.btv.app.features.membership.Membership;
+import com.btv.app.features.membership.model.Membership;
 import com.google.cloud.firestore.annotation.DocumentId;
 import jakarta.persistence.*;
 import java.time.LocalDate;
