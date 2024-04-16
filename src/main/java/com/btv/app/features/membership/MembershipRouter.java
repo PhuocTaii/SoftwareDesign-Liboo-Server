@@ -1,10 +1,8 @@
 package com.btv.app.features.membership;
 
+import com.btv.app.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,5 +22,20 @@ public class MembershipRouter {
     @GetMapping("/getMembershipByID/{id}")
     public Membership getMembershipByID(@PathVariable("id") Long id){
         return membershipController.getMembershipByID(id);
+    }
+
+    @PostMapping("/addMembership")
+    public Membership addMembership(@ModelAttribute Membership membership){
+        return membershipController.addMembership(membership);
+    }
+
+    @PutMapping("/modifyMembership/{id}")
+    public Membership modifyMembership(@PathVariable("id") Long id, @ModelAttribute Membership membership){
+        return membershipController.modifyMembership(id, membership);
+    }
+
+    @DeleteMapping("/deleteMembership/{id}")
+    public void deleteMembership(@PathVariable("id") Long id){
+        membershipController.deleteMembership(id);
     }
 }
