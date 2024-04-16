@@ -28,7 +28,7 @@ public class GenreController {
     }
 
     @GetMapping("/getGenreByID/{id}")
-    public Genre getGenreByID(Long id){
+    public Genre getGenreByID(@PathVariable("id") Long id){
         try{
             return genreService.getGenreByID(id);
         } catch (Exception e) {
@@ -38,7 +38,7 @@ public class GenreController {
     }
 
     @PostMapping("/addGenre")
-    public Genre addGenre(Genre genre){
+    public Genre addGenre(@ModelAttribute Genre genre){
         try{
             Genre tmp = genreService.addGenre(genre);
             return new Genre(tmp);
@@ -49,7 +49,7 @@ public class GenreController {
     }
 
     @PutMapping("/modifyGenre/{id}")
-    public Genre modifyGenre(Long id, Genre genre){
+    public Genre modifyGenre(@PathVariable("id") Long id, @ModelAttribute Genre genre){
         try{
             Genre curGenre = genreService.getGenreByID(id);
             Genre tmp = genreService.modifyGenre(curGenre, genre);
@@ -61,7 +61,7 @@ public class GenreController {
     }
 
     @DeleteMapping("/deleteGenre/{id}")
-    public void deleteGenre(Long id){
+    public void deleteGenre(@PathVariable("id") Long id){
         try{
             genreService.deleteGenre(id);
         } catch (Exception e) {

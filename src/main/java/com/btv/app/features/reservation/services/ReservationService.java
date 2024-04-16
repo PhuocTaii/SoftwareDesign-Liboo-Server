@@ -1,5 +1,6 @@
-package com.btv.app.features.reservation;
+package com.btv.app.features.reservation.services;
 
+import com.btv.app.features.reservation.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

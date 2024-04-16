@@ -1,4 +1,4 @@
-package com.btv.app.features.renewal;
+package com.btv.app.features.renewal.model;
 
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.user.models.User;

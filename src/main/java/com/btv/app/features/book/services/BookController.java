@@ -27,7 +27,7 @@ public class BookController {
     }
 
     @GetMapping("/getBookByID/{id}")
-    public Book getBookByID(Long id){
+    public Book getBookByID(@PathVariable("id") Long id){
         try{
             return bookService.getBookByID(id);
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class BookController {
     }
 
     @PostMapping("/addBook")
-    public Book addBook(Book book){
+    public Book addBook(@ModelAttribute Book book){
         try{
             Book tmp = bookService.addBook(book);
             return new Book(tmp);
@@ -47,8 +47,20 @@ public class BookController {
         }
     }
 
+    @PutMapping("/modifyBook/{id}")
+    public Book modifyBook(@PathVariable("id") Long id, @ModelAttribute Book book){
+        try{
+            Book curBook = bookService.getBookByID(id);
+            Book tmp = bookService.modifyBook(curBook, book);
+            return new Book(tmp);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
     @DeleteMapping("/deleteBook/{id}")
-    public void deleteBook(Long id){
+    public void deleteBook(@PathVariable("id") Long id){
         try{
             bookService.deleteBook(id);
         } catch (Exception e) {

@@ -1,10 +1,15 @@
-package com.btv.app.features.reservation;
+package com.btv.app.features.reservation.services;
 
-import org.springframework.stereotype.Component;
+import com.btv.app.features.reservation.model.Reservation;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Component
+@RestController
+@RequestMapping("api/reservation")
 public class ReservationController {
     private final ReservationService reservationService;
 
@@ -12,6 +17,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @GetMapping("/getAllReservations")
     public List<Reservation> getAllReservations(){
         try {
             return reservationService.getAllReservations();
@@ -21,7 +27,8 @@ public class ReservationController {
         }
     }
 
-    public Reservation getReservationByID(Long id){
+    @GetMapping("/getReservationByID/{id}")
+    public Reservation getReservationByID(@PathVariable("id") Long id){
         try{
             return reservationService.getReservationByID(id);
         } catch (Exception e) {

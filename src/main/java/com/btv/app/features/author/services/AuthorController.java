@@ -26,7 +26,7 @@ public class AuthorController {
     }
 
     @GetMapping("/getAuthorByID/{id}")
-    public Author getAuthorByID(Long id){
+    public Author getAuthorByID(@PathVariable("id") Long id){
         try{
             return authorService.getAuthorByID(id);
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class AuthorController {
     }
 
     @PostMapping("/addAuthor")
-    public Author addAuthor(Author author) {
+    public Author addAuthor(@ModelAttribute Author author) {
         try{
             Author tmp = authorService.addAuthor(author);
             return new Author(tmp);
@@ -47,7 +47,7 @@ public class AuthorController {
     }
 
     @PutMapping("/modifyAuthor/{id}")
-    public Author modifyAuthor(Long id, Author author){
+    public Author modifyAuthor(@PathVariable("id") Long id, @ModelAttribute Author author){
         try{
             Author curAuthor = authorService.getAuthorByID(id);
             Author tmp = authorService.modifyAuthor(curAuthor, author);
@@ -59,7 +59,7 @@ public class AuthorController {
     }
 
     @DeleteMapping("/deleteAuthor/{id}")
-    public void deleteAuthor(Long id){
+    public void deleteAuthor(@PathVariable("id") Long id){
         try{
             authorService.deleteAuthor(id);
         } catch (Exception e) {

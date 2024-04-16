@@ -1,7 +1,7 @@
 package com.btv.app.features.intermediate;
 
 import com.btv.app.features.book.model.Book;
-import com.btv.app.features.reservation.Reservation;
+import com.btv.app.features.reservation.model.Reservation;
 import jakarta.persistence.*;
 
 @Entity

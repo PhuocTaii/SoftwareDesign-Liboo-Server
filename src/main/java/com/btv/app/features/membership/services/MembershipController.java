@@ -27,7 +27,7 @@ public class MembershipController {
     }
 
     @GetMapping("/getMembershipByID/{id}")
-    public Membership getMembershipByID(Long id){
+    public Membership getMembershipByID(@PathVariable("id") Long id){
         try{
             return membershipService.getMembershipByID(id);
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class MembershipController {
     }
 
     @PostMapping("/addMembership")
-    public Membership addMembership(Membership membership) {
+    public Membership addMembership(@ModelAttribute Membership membership) {
         try{
             Membership tmp = membershipService.addMembership(membership);
             return new Membership(tmp);
@@ -48,7 +48,7 @@ public class MembershipController {
     }
 
     @PutMapping("/modifyMembership/{id}")
-    public Membership modifyMembership(long id, Membership membership) {
+    public Membership modifyMembership(@PathVariable("id") Long id, Membership membership) {
         try{
             Membership curMem = membershipService.getMembershipByID(id);
             Membership tmp = membershipService.modifyMembership(curMem, membership);
@@ -60,7 +60,7 @@ public class MembershipController {
     }
 
     @DeleteMapping("/deleteMembership/{id}")
-    public void deleteMembership(long id) {
+    public void deleteMembership(@PathVariable("id") Long id) {
         try{
             membershipService.deleteMembership(id);
         } catch (Exception e) {

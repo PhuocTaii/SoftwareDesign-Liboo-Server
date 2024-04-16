@@ -1,5 +1,6 @@
-package com.btv.app.features.renewal;
+package com.btv.app.features.renewal.services;
 
+import com.btv.app.features.renewal.model.Renewal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
