@@ -1,5 +1,6 @@
-package com.btv.app.features.genre;
+package com.btv.app.features.genre.services;
 
+import com.btv.app.features.genre.model.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,5 +26,16 @@ public class GenreService {
 
     public Genre addGenre(Genre genre){
         return genreRepository.save(genre);
+    }
+
+    public Genre modifyGenre(Genre curGenre, Genre updateGenre){
+        if(updateGenre.getName() != null){
+            curGenre.setName(updateGenre.getName());
+        }
+        return genreRepository.save(curGenre);
+    }
+
+    public void deleteGenre(Long id){
+        genreRepository.deleteById(id);
     }
 }
