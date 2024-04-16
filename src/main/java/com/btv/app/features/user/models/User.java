@@ -10,8 +10,7 @@ import java.time.LocalDate;
 public class User {
     @Id
     @DocumentId
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -44,7 +43,7 @@ public class User {
         joinedDate = LocalDate.now();
     }
 
-    public User(Long id, String email, String name, String address, String phone, LocalDate joinedDate, Role role, String photo, Membership membership) {
+    public User(String id, String email, String name, String address, String phone, LocalDate joinedDate, Role role, String photo, Membership membership) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -68,11 +67,11 @@ public class User {
         this.membership = tmp.getMembership();
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

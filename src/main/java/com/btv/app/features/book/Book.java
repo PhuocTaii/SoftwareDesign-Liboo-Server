@@ -1,6 +1,6 @@
 package com.btv.app.features.book;
 
-import com.btv.app.features.author.Author;
+import com.btv.app.features.author.models.Author;
 import com.btv.app.features.genre.Genre;
 import com.btv.app.features.publisher.Publisher;
 import jakarta.persistence.*;

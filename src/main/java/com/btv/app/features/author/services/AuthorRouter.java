@@ -1,10 +1,8 @@
-package com.btv.app.features.author;
+package com.btv.app.features.author.services;
 
+import com.btv.app.features.author.models.Author;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +23,20 @@ public class AuthorRouter {
     @GetMapping("/getAuthorByID/{id}")
     public Author getAuthorByID(@PathVariable("id") Long id){
         return authorController.getAuthorByID(id);
+    }
+
+    @PostMapping("/addAuthor")
+    public Author addAuthor(@ModelAttribute Author author){
+        return authorController.addAuthor(author);
+    }
+
+    @PutMapping("/modifyAuthor/{id}")
+    public Author modifyAuthor(@PathVariable("id") Long id, @ModelAttribute Author author){
+        return authorController.modifyAuthor(id, author);
+    }
+
+    @DeleteMapping("/deleteAuthor/{id}")
+    public void deleteAuthor(@PathVariable("id") Long id){
+        authorController.deleteAuthor(id);
     }
 }
