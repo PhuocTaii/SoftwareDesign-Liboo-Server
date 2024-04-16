@@ -1,5 +1,6 @@
-package com.btv.app.features.book;
+package com.btv.app.features.book.services;
 
+import com.btv.app.features.book.model.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,10 @@ public class BookService {
         return optionalBook.orElse(null);
     }
 
-//    public Book addBook(Book book){
-//
-//    }
-
+    public Book addBook(Book book){
+        return bookRepository.save(book);
+    }
+    public void deleteBook(Long id){
+        bookRepository.deleteById(id);
+    }
 }

@@ -1,7 +1,7 @@
 package com.btv.app.features.transaction;
 
 
-import com.btv.app.features.book.Book;
+import com.btv.app.features.book.model.Book;
 import com.btv.app.features.user.models.User;
 import jakarta.persistence.*;
 

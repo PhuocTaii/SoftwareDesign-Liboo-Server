@@ -1,4 +1,4 @@
-package com.btv.app.features.author.models;
+package com.btv.app.features.author.model;
 
 import jakarta.persistence.*;
 
@@ -9,7 +9,7 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, columnDefinition = "nvarchar(255)")
     private String name;
     public Author() {}
 

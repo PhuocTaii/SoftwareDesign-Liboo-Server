@@ -1,11 +1,13 @@
 package com.btv.app.features.author.services;
 
-import com.btv.app.features.author.models.Author;
+import com.btv.app.features.author.model.Author;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Component
+@RestController
+@RequestMapping("api/author")
 public class AuthorController {
     private final AuthorService authorService;
 
@@ -13,6 +15,7 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
+    @GetMapping("/getAllAuthors")
     public List<Author> getAllAuthors(){
         try {
             return authorService.getAllAuthors();
@@ -22,6 +25,7 @@ public class AuthorController {
         }
     }
 
+    @GetMapping("/getAuthorByID/{id}")
     public Author getAuthorByID(Long id){
         try{
             return authorService.getAuthorByID(id);
@@ -31,6 +35,7 @@ public class AuthorController {
         }
     }
 
+    @PostMapping("/addAuthor")
     public Author addAuthor(Author author) {
         try{
             Author tmp = authorService.addAuthor(author);
@@ -41,6 +46,7 @@ public class AuthorController {
         }
     }
 
+    @PutMapping("/modifyAuthor/{id}")
     public Author modifyAuthor(Long id, Author author){
         try{
             Author curAuthor = authorService.getAuthorByID(id);
@@ -52,6 +58,7 @@ public class AuthorController {
         }
     }
 
+    @DeleteMapping("/deleteAuthor/{id}")
     public void deleteAuthor(Long id){
         try{
             authorService.deleteAuthor(id);

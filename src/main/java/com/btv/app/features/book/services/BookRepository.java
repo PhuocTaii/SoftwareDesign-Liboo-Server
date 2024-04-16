@@ -1,5 +1,6 @@
-package com.btv.app.features.book;
+package com.btv.app.features.book.services;
 
+import com.btv.app.features.book.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

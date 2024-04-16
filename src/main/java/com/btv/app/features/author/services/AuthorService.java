@@ -1,6 +1,6 @@
 package com.btv.app.features.author.services;
 
-import com.btv.app.features.author.models.Author;
+import com.btv.app.features.author.model.Author;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
