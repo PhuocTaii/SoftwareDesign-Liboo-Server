@@ -1,8 +1,10 @@
 package com.btv.app.features.membership.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "membership")
 public class Membership {
     @Id
@@ -69,61 +71,5 @@ public class Membership {
             this.reserve = 1;
             this.duration = 6;
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Integer getMembershipFee() {
-        return membershipFee;
-    }
-
-    public void setMembershipFee(Integer membershipFee) {
-        this.membershipFee = membershipFee;
-    }
-
-    public Integer getMaxBook() {
-        return maxBook;
-    }
-
-    public void setMaxBook(Integer maxBook) {
-        this.maxBook = maxBook;
-    }
-
-    public Integer getMaxRenewal() {
-        return maxRenewal;
-    }
-
-    public void setMaxRenewal(Integer maxRenewal) {
-        this.maxRenewal = maxRenewal;
-    }
-
-    public Integer getReserve() {
-        return reserve;
-    }
-
-    public void setReserve(Integer reserve) {
-        this.reserve = reserve;
-    }
-
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
     }
 }

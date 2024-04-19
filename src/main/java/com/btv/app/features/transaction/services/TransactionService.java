@@ -1,5 +1,6 @@
-package com.btv.app.features.transaction;
+package com.btv.app.features.transaction.services;
 
+import com.btv.app.features.transaction.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

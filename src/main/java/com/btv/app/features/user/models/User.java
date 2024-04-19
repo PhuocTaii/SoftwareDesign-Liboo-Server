@@ -2,27 +2,44 @@ package com.btv.app.features.user.models;
 
 
 import com.btv.app.features.membership.model.Membership;
-import com.google.cloud.firestore.annotation.DocumentId;
 import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
-public class User {
+@Table(name = "users")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class User implements UserDetails {
     @Id
-    @DocumentId
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @Column(name = "name", nullable = false, columnDefinition = "nvarchar(255)")
     private String name;
+
+    @Column(name = "identifier", nullable = false, unique = true)
+    private String identifier;
 
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "phone", nullable = false, unique = true)
-    private String phone;
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
 
     @Column(name = "joined_date", nullable = false)
     private LocalDate joinedDate;
@@ -30,113 +47,83 @@ public class User {
     @Column(name = "photo")
     private String photo;
 
+    @Column(name = "gender", nullable = false)
+    private Boolean gender;
+
     @ManyToOne
     @JoinColumn(name = "membership_id")
     private Membership membership;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, columnDefinition = "varchar(255) default 'USER'")
+    @Column(name = "role", nullable = false)
     private Role role;
 
     @PrePersist
     private void onCreate() {
         joinedDate = LocalDate.now();
+        role = Role.USER;
+        membership = new Membership(1);
     }
 
-    public User(String id, String email, String name, String address, String phone, LocalDate joinedDate, Role role, String photo, Membership membership) {
+    public User(Long id, String email, String password, String name, String identifier, LocalDate birthDate, String address, Boolean gender) {
         this.id = id;
         this.email = email;
+        this.password = password;
         this.name = name;
+        this.identifier = identifier;
         this.address = address;
-        this.phone = phone;
-        this.joinedDate = joinedDate;
-        this.role = role;
-        this.photo = photo;
-        this.membership = membership;
+        this.birthDate = birthDate;
+        this.gender = gender;
     }
 
-    public User (User tmp){
-        this.id = tmp.getId();
-        this.email = tmp.getEmail();
-        this.name = tmp.getName();
-        this.address = tmp.getAddress();
-        this.phone = tmp.getPhone();
-        this.joinedDate = tmp.getJoinedDate();
-        this.role = tmp.getRole();
-        this.photo = tmp.getPhoto();
-        this.membership = tmp.getMembership();
+    public User(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.name = user.getName();
+        this.identifier = user.getIdentifier();
+        this.address = user.getAddress();
+        this.birthDate = user.getBirthDate();
+        this.joinedDate = user.getJoinedDate();
+        this.photo = user.getPhoto();
+        this.membership = user.getMembership();
+        this.role = user.getRole();
+        this.gender = user.getGender();
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
+    @Override
+    public String getUsername() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public String getPassword() {
+        return password;
     }
 
-    public String getName() {
-        return name;
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public String getAddress() {
-        return address;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public LocalDate getJoinedDate() {
-        return joinedDate;
-    }
-
-    public void setJoinedDate(LocalDate joinedDate) {
-        this.joinedDate = joinedDate;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
-    public Membership getMembership() {
-        return membership;
-    }
-
-    public void setMembership(Membership membership) {
-        this.membership = membership;
-    }
-
 }

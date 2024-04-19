@@ -2,12 +2,13 @@ package com.btv.app.features.user.services;
 
 import com.btv.app.features.user.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api")
 public class UserController {
     private final UserService userService;
 
@@ -15,7 +16,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    @GetMapping("/getAllUsers")
+    @GetMapping("admin/getAllUsers")
     public List<User> getAllUsers(){
         try {
             List<User> UserList =  userService.getAllUsers();
@@ -32,7 +33,7 @@ public class UserController {
             return null;
         }
     }
-    @GetMapping("/getUserByID/{id}")
+    @GetMapping("user/getUserByID/{id}")
     public User getUserByID(@PathVariable("id") Long id){
         try{
             User tmp = userService.getUserByID(id);
@@ -43,7 +44,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/addUser")
+    @PostMapping("admin/addUser")
         public User addUser(@ModelAttribute User user){
         try{
             User tmp = userService.addUser(user);
@@ -54,7 +55,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/modifyUser/{id}")
+    @PutMapping("admin/modifyUser/{id}")
     public User modifyUser(@PathVariable("id") Long id, @ModelAttribute User user){
         try{
             User curUser = userService.getUserByID(id);
@@ -66,7 +67,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("admin/deleteUser/{id}")
     public void deleteUser(@PathVariable("id") Long id){
         try{
             userService.deleteUser(id);

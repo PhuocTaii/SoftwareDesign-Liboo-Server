@@ -2,6 +2,9 @@ package com.btv.app.features.user.services;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,9 +36,6 @@ public class UserService {
         if(updateUser.getAddress() != null){
             curUser.setAddress(updateUser.getAddress());
         }
-        if(updateUser.getPhone() != null){
-            curUser.setPhone(updateUser.getPhone());
-        }
         return userRepository.save(curUser);
     }
 
@@ -43,4 +43,21 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+
+//    @Override
+//    public UserDetails loadUserByUsername(String email) {
+//        Optional<User> user = userRepository.findByEmail(email);
+//        if (user.isEmpty()) {
+//            throw new UsernameNotFoundException(email);
+//        }
+//        return new User(user);
+//    }
+
+//    public UserDetails loadUserById(Long id) {
+//        User user = userRepository.findById(id).orElse(null);
+//        if (user == null) {
+//            throw new UsernameNotFoundException("User not found with id : " + id);
+//        }
+//        return new User(user);
+//    }
 }
