@@ -21,7 +21,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthenticationResponse> signup(@RequestBody RegisterRequest request){
+    public ResponseEntity<AuthenticationResponse> signup(@ModelAttribute RegisterRequest request){
         try{
             return ResponseEntity.ok(authenticationService.registerAccount(request));
         } catch (Exception e){
@@ -31,7 +31,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request){
+    public ResponseEntity<AuthenticationResponse> login(@ModelAttribute AuthenticationRequest request){
         return ResponseEntity.ok(authenticationService.login(request));
     }
 }

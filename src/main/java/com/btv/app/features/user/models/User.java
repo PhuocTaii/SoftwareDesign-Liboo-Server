@@ -50,6 +50,9 @@ public class User implements UserDetails {
     @Column(name = "gender", nullable = false)
     private Boolean gender;
 
+    @Column(name = "phone", nullable = false)
+    private String phone;
+
     @ManyToOne
     @JoinColumn(name = "membership_id")
     private Membership membership;
@@ -58,22 +61,15 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Column(name = "expiredDate")
+    private LocalDate expiredDate;
+
     @PrePersist
     private void onCreate() {
         joinedDate = LocalDate.now();
         role = Role.USER;
         membership = new Membership(1);
-    }
-
-    public User(Long id, String email, String password, String name, String identifier, LocalDate birthDate, String address, Boolean gender) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.identifier = identifier;
-        this.address = address;
-        this.birthDate = birthDate;
-        this.gender = gender;
+        expiredDate = null;
     }
 
     public User(User user) {
@@ -89,6 +85,8 @@ public class User implements UserDetails {
         this.membership = user.getMembership();
         this.role = user.getRole();
         this.gender = user.getGender();
+        this.phone = user.getPhone();
+        this.expiredDate = user.getExpiredDate();
     }
 
     @Override

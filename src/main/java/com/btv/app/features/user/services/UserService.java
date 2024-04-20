@@ -36,6 +36,16 @@ public class UserService {
         if(updateUser.getAddress() != null){
             curUser.setAddress(updateUser.getAddress());
         }
+        if(updateUser.getPhone() != null){
+            curUser.setPhone(updateUser.getPhone());
+        }
+        if(updateUser.getGender() != null){
+            curUser.setGender(updateUser.getGender());
+        }
+        if(updateUser.getBirthDate() != null){
+            curUser.setBirthDate(updateUser.getBirthDate());
+        }
+
         return userRepository.save(curUser);
     }
 
@@ -43,21 +53,4 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-
-//    @Override
-//    public UserDetails loadUserByUsername(String email) {
-//        Optional<User> user = userRepository.findByEmail(email);
-//        if (user.isEmpty()) {
-//            throw new UsernameNotFoundException(email);
-//        }
-//        return new User(user);
-//    }
-
-//    public UserDetails loadUserById(Long id) {
-//        User user = userRepository.findById(id).orElse(null);
-//        if (user == null) {
-//            throw new UsernameNotFoundException("User not found with id : " + id);
-//        }
-//        return new User(user);
-//    }
 }

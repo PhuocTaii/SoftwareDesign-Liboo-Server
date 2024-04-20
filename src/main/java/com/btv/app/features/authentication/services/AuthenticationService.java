@@ -32,6 +32,7 @@ public class AuthenticationService {
                 .birthDate(request.getBirthDate())
                 .address(request.getAddress())
                 .gender(request.getGender())
+                .phone(request.getPhone())
                 .build();
         userRepository.save(user);
         var jwt = jwtProvider.generateToken(user);

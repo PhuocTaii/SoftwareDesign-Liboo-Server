@@ -2,6 +2,7 @@ package com.btv.app.features.user.services;
 
 import com.btv.app.features.user.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class UserController {
             return null;
         }
     }
-    @GetMapping("user/getUserByID/{id}")
+    @GetMapping("admin/getUserByID/{id}")
     public User getUserByID(@PathVariable("id") Long id){
         try{
             User tmp = userService.getUserByID(id);
@@ -49,7 +50,7 @@ public class UserController {
         try{
             User tmp = userService.addUser(user);
             return new User(tmp);
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException e) {
             System.out.println(e);
             return null;
         }

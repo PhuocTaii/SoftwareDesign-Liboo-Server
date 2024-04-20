@@ -37,8 +37,8 @@ public class BookService {
         if(updateBook.getName() != null){
             curBook.setName(updateBook.getName());
         }
-        if(updateBook.getAuthors() != null){
-            curBook.setAuthors(updateBook.getAuthors());
+        if(updateBook.getAuthor() != null){
+            curBook.setAuthor(updateBook.getAuthor());
         }
         if(updateBook.getGenres() != null){
             curBook.setGenres(updateBook.getGenres());

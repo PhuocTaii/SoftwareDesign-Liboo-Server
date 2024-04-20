@@ -20,4 +20,5 @@ public class RegisterRequest {
     private LocalDate birthDate;
     private String address;
     private Boolean gender; //True: Male, False: Female
+    private String phone;
 }
