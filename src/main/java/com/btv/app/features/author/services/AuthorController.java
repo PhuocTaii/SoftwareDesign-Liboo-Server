@@ -1,6 +1,7 @@
 package com.btv.app.features.author.services;
 
 import com.btv.app.features.author.model.Author;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/admin")
+@AllArgsConstructor
 public class AuthorController {
     private final AuthorService authorService;
-
-    public AuthorController(AuthorService authorService) {
-        this.authorService = authorService;
-    }
-
     @GetMapping("/getAllAuthors")
     public ResponseEntity<List<Author>>getAllAuthors(){
         try {
@@ -57,8 +54,7 @@ public class AuthorController {
             if(curAuthor == null){
                 return ResponseEntity.status(404).build();
             }
-            Author tmp = authorService.modifyAuthor(curAuthor, author);
-            Author res = new Author(tmp);
+            Author res = authorService.modifyAuthor(curAuthor, author);
             return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();

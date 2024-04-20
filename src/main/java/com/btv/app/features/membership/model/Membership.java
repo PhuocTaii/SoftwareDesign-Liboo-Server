@@ -1,10 +1,14 @@
 package com.btv.app.features.membership.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "membership")
 public class Membership {
     @Id
@@ -22,28 +26,6 @@ public class Membership {
     private Integer reserve;
     @Column(name = "membership_duration", nullable = false)
     private Integer duration;
-
-    public Membership() {}
-
-    public Membership(Long id, String type, Integer membershipFee, Integer maxBook, Integer maxRenewal, Integer reserve, Integer duration) {
-        this.id = id;
-        this.type = type;
-        this.membershipFee = membershipFee;
-        this.maxBook = maxBook;
-        this.maxRenewal = maxRenewal;
-        this.reserve = reserve;
-        this.duration = duration;
-    }
-
-    public Membership(Membership membership) {
-        this.id = membership.getId();
-        this.type = membership.getType();
-        this.membershipFee = membership.getMembershipFee();
-        this.maxBook = membership.getMaxBook();
-        this.maxRenewal = membership.getMaxRenewal();
-        this.reserve = membership.getReserve();
-        this.duration = membership.getDuration();
-    }
 
     public Membership(Integer type){
         if(type == 1){

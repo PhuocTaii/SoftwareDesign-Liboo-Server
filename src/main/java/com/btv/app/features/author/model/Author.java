@@ -22,9 +22,4 @@ public class Author {
 
     @Column(name = "name", nullable = false, unique = true, columnDefinition = "nvarchar(255)")
     private String name;
-
-    public Author(Author tmp) {
-        this.id = tmp.getId();
-        this.name = tmp.getName();
-    }
 }

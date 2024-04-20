@@ -1,8 +1,10 @@
 package com.btv.app.features.genre.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "genre")
 
 public class Genre {
@@ -10,33 +12,6 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "nvarchar(255)")
+    @Column(nullable = false, columnDefinition = "nvarchar(255)", unique = true)
     private String name;
-
-    public Genre(){}
-    public Genre(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Genre(Genre tmp) {
-        this.id=tmp.getId();
-        this.name=tmp.getName();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

@@ -1,70 +1,73 @@
 package com.btv.app.features.membership.services;
 
 import com.btv.app.features.membership.model.Membership;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/membership")
+@RequestMapping("api/admin")
+@AllArgsConstructor
 public class MembershipController {
     private final MembershipService membershipService;
-
-    @Autowired
-    public MembershipController(MembershipService membershipService) {
-        this.membershipService = membershipService;
-    }
-
     @GetMapping("/getAllMemberships")
-    public List<Membership> getAllMemberships(){
+    public ResponseEntity<List<Membership>> getAllMemberships(){
         try {
-            return membershipService.getAllMemberships();
+            List<Membership> res =  membershipService.getAllMemberships();
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @GetMapping("/getMembershipByID/{id}")
-    public Membership getMembershipByID(@PathVariable("id") Long id){
+    public ResponseEntity<Membership> getMembershipByID(@PathVariable("id") Long id){
         try{
-            return membershipService.getMembershipByID(id);
+            Membership res = membershipService.getMembershipByID(id);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @PostMapping("/addMembership")
-    public Membership addMembership(@ModelAttribute Membership membership) {
+    public ResponseEntity<Membership> addMembership(@ModelAttribute Membership membership) {
         try{
-            Membership tmp = membershipService.addMembership(membership);
-            return new Membership(tmp);
+            Membership res = membershipService.addMembership(membership);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @PutMapping("/modifyMembership/{id}")
-    public Membership modifyMembership(@PathVariable("id") Long id, Membership membership) {
+    public ResponseEntity<Membership> modifyMembership(@PathVariable("id") Long id, Membership membership) {
         try{
             Membership curMem = membershipService.getMembershipByID(id);
-            Membership tmp = membershipService.modifyMembership(curMem, membership);
-            return new Membership(tmp);
+            if(curMem == null){
+                return ResponseEntity.status(404).build();
+            }
+            Membership res = membershipService.modifyMembership(curMem, membership);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @DeleteMapping("/deleteMembership/{id}")
-    public void deleteMembership(@PathVariable("id") Long id) {
+    public ResponseEntity<Membership> deleteMembership(@PathVariable("id") Long id) {
         try{
+            Membership curMem = membershipService.getMembershipByID(id);
+            if(curMem == null){
+                return ResponseEntity.status(404).build();
+            }
             membershipService.deleteMembership(id);
+            return ResponseEntity.status(200).body(curMem);
         } catch (Exception e) {
-            System.out.println(e);
+            return ResponseEntity.status(500).build();
         }
     }
 }

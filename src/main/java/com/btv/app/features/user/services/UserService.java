@@ -1,6 +1,7 @@
 package com.btv.app.features.user.services;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,13 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
+@AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -26,6 +23,9 @@ public class UserService {
         return optionalUser.orElse(null);
     }
     public User addUser(User user){
+        if(userRepository.existsByEmail(user.getEmail()) || userRepository.existByIdentifier(user.getIdentifier())){
+            return null;
+        }
         return userRepository.save(user);
     }
 

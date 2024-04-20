@@ -1,19 +1,18 @@
 package com.btv.app.features.membership.services;
 
 import com.btv.app.features.membership.model.Membership;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class MembershipService {
     private final MembershipRepository membershipRepository;
-    @Autowired
-    public MembershipService(MembershipRepository membershipRepository) {
-        this.membershipRepository = membershipRepository;
-    }
     public List<Membership> getAllMemberships() {
         return membershipRepository.findAll();
     }
@@ -24,6 +23,9 @@ public class MembershipService {
     }
 
     public Membership addMembership(Membership membership){
+        if(membershipRepository.existsByType(membership.getType())){
+            throw new DataIntegrityViolationException("Membership already exists");
+        }
         return membershipRepository.save(membership);
     }
 

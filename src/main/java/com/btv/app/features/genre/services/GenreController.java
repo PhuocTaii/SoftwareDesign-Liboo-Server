@@ -1,71 +1,74 @@
 package com.btv.app.features.genre.services;
 
 import com.btv.app.features.genre.model.Genre;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/genre")
+@AllArgsConstructor
+@RequestMapping("api/admin")
 public class GenreController {
     private final GenreService genreService;
-
-    @Autowired
-    public GenreController(GenreService genreService) {
-        this.genreService = genreService;
-    }
-
     @GetMapping("/getAllGenres")
-    public List<Genre> getAllGenres(){
+    public ResponseEntity<List<Genre>> getAllGenres(){
         try {
-            return genreService.getAllGenres();
+            List<Genre> res = genreService.getAllGenres();
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @GetMapping("/getGenreByID/{id}")
-    public Genre getGenreByID(@PathVariable("id") Long id){
+    public ResponseEntity<Genre> getGenreByID(@PathVariable("id") Long id){
         try{
-            return genreService.getGenreByID(id);
+            Genre res = genreService.getGenreByID(id);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @PostMapping("/addGenre")
-    public Genre addGenre(@ModelAttribute Genre genre){
+    public ResponseEntity<Genre> addGenre(@ModelAttribute Genre genre){
         try{
-            Genre tmp = genreService.addGenre(genre);
-            return new Genre(tmp);
+            Genre res = genreService.addGenre(genre);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @PutMapping("/modifyGenre/{id}")
-    public Genre modifyGenre(@PathVariable("id") Long id, @ModelAttribute Genre genre){
+    public ResponseEntity<Genre> modifyGenre(@PathVariable("id") Long id, @ModelAttribute Genre genre){
         try{
             Genre curGenre = genreService.getGenreByID(id);
+            if(curGenre == null){
+                return ResponseEntity.status(404).build();
+            }
             Genre tmp = genreService.modifyGenre(curGenre, genre);
-            return new Genre(tmp);
+            return ResponseEntity.status(200).body(tmp);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @DeleteMapping("/deleteGenre/{id}")
-    public void deleteGenre(@PathVariable("id") Long id){
+    public ResponseEntity<Genre> deleteGenre(@PathVariable("id") Long id){
         try{
+            Genre curGenre = genreService.getGenreByID(id);
+            if(curGenre == null){
+                return ResponseEntity.status(404).build();
+            }
             genreService.deleteGenre(id);
+            return ResponseEntity.status(200).body(curGenre);
         } catch (Exception e) {
-            System.out.println(e);
+            return ResponseEntity.status(500).build();
         }
     }
 }

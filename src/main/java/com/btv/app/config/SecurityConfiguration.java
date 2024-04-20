@@ -30,8 +30,9 @@ public class SecurityConfiguration{
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                            .requestMatchers("/api/authentication/**")
-                            .permitAll()
+                            .requestMatchers("/api/authentication/**").permitAll()
+                            .requestMatchers("/api/getAllBooks").permitAll()
+                            .requestMatchers("/api/getBookByID/**").permitAll()
                             .requestMatchers("/api/admin/**").hasAuthority(ADMIN.name())
                             .requestMatchers("/api/user/**").hasAuthority(USER.name())
                             .requestMatchers("/api/librarian/**").hasAuthority(LIBRARIAN.name())
