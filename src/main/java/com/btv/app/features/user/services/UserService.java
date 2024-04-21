@@ -1,8 +1,11 @@
 package com.btv.app.features.user.services;
+import com.btv.app.features.book.model.Book;
+import com.btv.app.features.image.model.Image;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,8 +26,11 @@ public class UserService {
         return optionalUser.orElse(null);
     }
     public User addUser(User user){
-        if(userRepository.existsByEmail(user.getEmail()) || userRepository.existByIdentifier(user.getIdentifier())){
-            return null;
+        if(userRepository.existsByEmail(user.getEmail())){
+            throw new DataIntegrityViolationException("Email already exists");
+        }
+        else if(userRepository.existsByIdentifier(user.getIdentifier())){
+            throw new DataIntegrityViolationException("Identifier already exists");
         }
         return userRepository.save(user);
     }
@@ -51,6 +57,11 @@ public class UserService {
 
     public void deleteUser(Long id){
         userRepository.deleteById(id);
+    }
+
+    public User uploadImage(User user, Image image){
+        user.setImage(image);
+        return userRepository.save(user);
     }
 
 }

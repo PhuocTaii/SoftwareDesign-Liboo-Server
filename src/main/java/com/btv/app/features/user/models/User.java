@@ -1,6 +1,7 @@
 package com.btv.app.features.user.models;
 
 
+import com.btv.app.features.image.model.Image;
 import com.btv.app.features.membership.model.Membership;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,8 +45,9 @@ public class User implements UserDetails {
     @Column(name = "joined_date", nullable = false)
     private LocalDate joinedDate;
 
-    @Column(name = "photo")
-    private String photo;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @Column(name = "gender", nullable = false)
     private Boolean gender;
@@ -71,24 +73,6 @@ public class User implements UserDetails {
         membership = new Membership(1);
         expiredDate = null;
     }
-
-    public User(User user) {
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-        this.name = user.getName();
-        this.identifier = user.getIdentifier();
-        this.address = user.getAddress();
-        this.birthDate = user.getBirthDate();
-        this.joinedDate = user.getJoinedDate();
-        this.photo = user.getPhoto();
-        this.membership = user.getMembership();
-        this.role = user.getRole();
-        this.gender = user.getGender();
-        this.phone = user.getPhone();
-        this.expiredDate = user.getExpiredDate();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

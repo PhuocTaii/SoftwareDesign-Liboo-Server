@@ -2,6 +2,7 @@ package com.btv.app.features.book.model;
 
 import com.btv.app.features.author.model.Author;
 import com.btv.app.features.genre.model.Genre;
+import com.btv.app.features.image.model.Image;
 import com.btv.app.features.publisher.model.Publisher;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,7 +21,6 @@ public class Book {
     private String ISBN;
     @Column(name = "b_name", nullable = false, length = 100, columnDefinition = "nvarchar(255)")
     private String name;
-
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
@@ -44,6 +44,7 @@ public class Book {
     private Integer quantity;
     @Column(name = "borrowed", nullable = false, columnDefinition = "integer default 0")
     private Integer borrowed;
-    @Column(name = "image")
-    private String image;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
 }

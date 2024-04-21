@@ -1,6 +1,7 @@
 package com.btv.app.features.book.services;
 
 import com.btv.app.features.book.model.Book;
+import com.btv.app.features.image.model.Image;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,7 +24,7 @@ public class BookService {
     }
 
     public Book addBook(Book book){
-        if(bookRepository.existsByName(book.getName())){
+        if(bookRepository.existsByISBN(book.getISBN())){
             throw new DataIntegrityViolationException("Book already exists");
         }
         return bookRepository.save(book);
@@ -60,6 +61,17 @@ public class BookService {
         if(updateBook.getBorrowed() != null){
             curBook.setBorrowed(updateBook.getBorrowed());
         }
+        if(updateBook.getDescription() != null){
+            curBook.setDescription(updateBook.getDescription());
+        }
+        if(updateBook.getImage() != null){
+            curBook.setImage(updateBook.getImage());
+        }
         return bookRepository.save(curBook);
+    }
+
+    public Book uploadImage(Book book, Image image){
+        book.setImage(image);
+        return bookRepository.save(book);
     }
 }
