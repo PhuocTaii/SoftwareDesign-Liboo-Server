@@ -1,8 +1,19 @@
 package com.btv.app.features.author.model;
 
+import com.btv.app.features.membership.model.Membership;
+import com.btv.app.features.user.models.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
+@Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "author")
 public class Author {
     @Id
@@ -11,26 +22,4 @@ public class Author {
 
     @Column(name = "name", nullable = false, unique = true, columnDefinition = "nvarchar(255)")
     private String name;
-    public Author() {}
-
-    public Author(Author tmp) {
-        this.id = tmp.id;
-        this.name = tmp.name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

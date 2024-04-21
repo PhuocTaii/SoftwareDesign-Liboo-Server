@@ -1,4 +1,4 @@
-package com.btv.app.features.transaction;
+package com.btv.app.features.transaction.models;
 
 
 import com.btv.app.features.book.model.Book;

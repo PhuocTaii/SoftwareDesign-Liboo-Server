@@ -1,20 +1,18 @@
 package com.btv.app.features.genre.services;
 
 import com.btv.app.features.genre.model.Genre;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class GenreService {
     private final GenreRepository genreRepository;
-    @Autowired
-    public GenreService(GenreRepository genreRepository) {
-        this.genreRepository = genreRepository;
-    }
-
     public List<Genre> getAllGenres() {
         return genreRepository.findAll();
     }
@@ -25,6 +23,9 @@ public class GenreService {
     }
 
     public Genre addGenre(Genre genre){
+        if(genreRepository.existsByName(genre.getName())){
+            throw new DataIntegrityViolationException("Genre already exists");
+        }
         return genreRepository.save(genre);
     }
 

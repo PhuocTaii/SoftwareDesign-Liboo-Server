@@ -1,68 +1,72 @@
 package com.btv.app.features.publisher.services;
 
 import com.btv.app.features.publisher.model.Publisher;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/publisher")
+@RequestMapping("api/admin")
+@AllArgsConstructor
 public class PublisherController {
     private final PublisherService publisherService;
-
-    public PublisherController(PublisherService publisherService) {
-        this.publisherService = publisherService;
-    }
-
     @GetMapping("/getAllPublishers")
-    public List<Publisher> getAllPublishers(){
+    public ResponseEntity<List<Publisher>> getAllPublishers(){
         try {
-            return publisherService.getAllPublishers();
+            List<Publisher> res = publisherService.getAllPublishers();
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).body(null);
         }
     }
 
     @GetMapping("/getPublisherByID/{id}")
-    public Publisher getPublisherByID(@PathVariable("id") Long id){
+    public ResponseEntity<Publisher> getPublisherByID(@PathVariable("id") Long id){
         try{
-            return publisherService.getPublisherByID(id);
+            Publisher res = publisherService.getPublisherByID(id);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @PostMapping("/addPublisher")
-    public Publisher addPublisher(@ModelAttribute Publisher publisher) {
+    public ResponseEntity<Publisher> addPublisher(@ModelAttribute Publisher publisher) {
         try{
-            Publisher tmp = publisherService.addPublisher(publisher);
-            return new Publisher(tmp);
+            Publisher res = publisherService.addPublisher(publisher);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @PutMapping("/modifyPublisher/{id}")
-    public Publisher modifyPublisher(@PathVariable("id") Long id, @ModelAttribute Publisher publisher) {
+    public ResponseEntity<Publisher> modifyPublisher(@PathVariable("id") Long id, @ModelAttribute Publisher publisher) {
         try{
             Publisher curPub = publisherService.getPublisherByID(id);
-            Publisher tmp = publisherService.modifyPublisher(curPub, publisher);
-            return new Publisher(tmp);
+            if(curPub == null){
+                return ResponseEntity.status(404).build();
+            }
+            Publisher res = publisherService.modifyPublisher(curPub, publisher);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
 
     @DeleteMapping("/deletePublisher/{id}")
-    public void deletePublisher(@PathVariable("id") Long id){
+    public ResponseEntity<Publisher> deletePublisher(@PathVariable("id") Long id){
         try{
+            Publisher curPub = publisherService.getPublisherByID(id);
+            if(curPub == null){
+                return ResponseEntity.status(404).build();
+            }
             publisherService.deletePublisher(id);
+            return ResponseEntity.status(200).body(curPub);
         } catch (Exception e) {
-            System.out.println(e);
+            return ResponseEntity.status(500).build();
         }
     }
 }
