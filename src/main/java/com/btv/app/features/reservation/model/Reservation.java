@@ -42,4 +42,60 @@ public class Reservation {
     protected void onCreate() {
         this.expiredDate = LocalDate.now().plusDays(5);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    public LocalDate getReservedDate() {
+        return reservedDate;
+    }
+
+    public void setReservedDate(LocalDate reservedDate) {
+        this.reservedDate = reservedDate;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public LocalDate getPickupDate() {
+        return pickupDate;
+    }
+
+    public void setPickupDate(LocalDate pickupDate) {
+        this.pickupDate = pickupDate;
+    }
+
+    public LocalDate getExpiredDate() {
+        return expiredDate;
+    }
+
+    public void setExpiredDate(LocalDate expiredDate) {
+        this.expiredDate = expiredDate;
+    }
 }

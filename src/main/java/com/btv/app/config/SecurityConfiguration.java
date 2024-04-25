@@ -32,6 +32,7 @@ public class SecurityConfiguration{
                         req
                             .requestMatchers("/api/authentication/**").permitAll()
                             .requestMatchers("/api/getAllBooks").permitAll()
+                            .requestMatchers("/api/reservations/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
                             .requestMatchers("/api/getBookByID/**").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/addUserImage/**").hasAnyAuthority(USER.name(), ADMIN.name())
                             .requestMatchers("/api/admin/**").hasAuthority(ADMIN.name())
