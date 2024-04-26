@@ -52,9 +52,6 @@ public class AuthenticationService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        if(user.getRole() != Role.USER){
-            return null;
-        }
         var jwt = jwtProvider.generateToken(user);
         return AuthenticationResponse.builder()
                 .user(user)

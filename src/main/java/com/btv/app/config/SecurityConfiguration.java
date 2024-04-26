@@ -35,7 +35,7 @@ public class SecurityConfiguration{
                 .authorizeHttpRequests(req ->
                         req
                             .requestMatchers("/api/authentication/**").permitAll()
-                            .requestMatchers("api/transaction/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
+                            .requestMatchers("/api/transaction/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
                             .requestMatchers("/api/getAllBooks").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/getBookByID/**").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/addUserImage/**").hasAnyAuthority(USER.name(), ADMIN.name())

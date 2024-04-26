@@ -24,8 +24,6 @@ public class Membership {
     private Integer maxRenewal;
     @Column(name = "reserve", nullable = false)
     private Integer reserve;
-    @Column(name = "membership_duration", nullable = false)
-    private Integer duration;
 
     public Membership(Integer type){
         if(type == 1){
