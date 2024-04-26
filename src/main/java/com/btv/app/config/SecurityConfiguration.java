@@ -1,6 +1,7 @@
 package com.btv.app.config;
 
 import com.btv.app.jwt.JwtAuthenticationFilter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static com.btv.app.features.user.models.Role.*;
 
@@ -31,7 +35,8 @@ public class SecurityConfiguration{
                 .authorizeHttpRequests(req ->
                         req
                             .requestMatchers("/api/authentication/**").permitAll()
-                            .requestMatchers("/api/getAllBooks").permitAll()
+                            .requestMatchers("api/transaction/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
+                            .requestMatchers("/api/getAllBooks").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/getBookByID/**").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/addUserImage/**").hasAnyAuthority(USER.name(), ADMIN.name())
                             .requestMatchers("/api/admin/**").hasAuthority(ADMIN.name())
@@ -45,5 +50,14 @@ public class SecurityConfiguration{
 
         return http.build();
     }
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(@NonNull CorsRegistry registry) {
+//                registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+//            }
+//        };
+//    }
 }
 

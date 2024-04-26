@@ -4,6 +4,8 @@ import com.btv.app.features.renewal.model.Renewal;
 import com.btv.app.features.user.models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,21 +19,31 @@ public class RenewalController {
     }
 
     @GetMapping("/all-renewals")
-    public List<Renewal> getAllRenewals(){
+    public ResponseEntity<List<Renewal>> getAllRenewals(){
         try {
-            return renewalService.getAllRenewals();
+            List<Renewal> res = renewalService.getAllRenewals();
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
-    @GetMapping("/renewal/{id}")
-    public Renewal getRenewalByID(@PathVariable("id") Long id){
+    @GetMapping("/librarian//renewal/{id}")
+    public ResponseEntity<Renewal> getRenewalByID(@PathVariable("id") Long id){
         try{
-            return renewalService.getRenewalByID(id);
+            Renewal res = renewalService.getRenewalByID(id);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PostMapping("/user/requestRenewal")
+    public ResponseEntity<Renewal> requestRenewal(@RequestBody Renewal renewal){
+        try {
+            Renewal res = renewalService.requestRenewal(renewal);
+            return ResponseEntity.status(200).body(res);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 

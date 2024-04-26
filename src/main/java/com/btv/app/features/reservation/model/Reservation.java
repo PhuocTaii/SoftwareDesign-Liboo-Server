@@ -3,12 +3,14 @@ package com.btv.app.features.reservation.model;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.user.models.User;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 @Table(name = "reservation")
 public class Reservation {
     @Id
@@ -30,16 +32,13 @@ public class Reservation {
     private LocalDate reservedDate;
 
     @Column(name = "status", nullable = false, columnDefinition = "boolean default false")
-    private Boolean status;
+    private Integer status; // 0 = pending, 1 = approved, 2 = rejected
 
     @Column(name = "pickup_date", nullable = false)
     private LocalDate pickupDate;
 
-    @Column(name = "expired_date", nullable = false)
-    private LocalDate expiredDate;
-
     @PrePersist
-    protected void onCreate() {
-        this.expiredDate = LocalDate.now().plusDays(5);
+    private void onCreate() {
+        status = 0;
     }
 }
