@@ -4,6 +4,7 @@ package com.btv.app.features.authentication.services;
 import com.btv.app.features.authentication.model.AuthenticationRequest;
 import com.btv.app.features.authentication.model.AuthenticationResponse;
 import com.btv.app.features.authentication.model.RegisterRequest;
+import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserRepository;
 import com.btv.app.jwt.JwtService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,7 @@ public class AuthenticationService {
         userRepository.save(user);
         var jwt = jwtProvider.generateToken(user);
         return AuthenticationResponse.builder()
+                .user(user)
                 .token(jwt)
                 .build();
     }
@@ -52,7 +55,18 @@ public class AuthenticationService {
                 .orElseThrow();
         var jwt = jwtProvider.generateToken(user);
         return AuthenticationResponse.builder()
+                .user(user)
                 .token(jwt)
                 .build();
+    }
+
+    public User getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof User) {
+            return (User) principal;
+        }
+
+        throw new IllegalArgumentException("User not found!");
     }
 }

@@ -24,34 +24,36 @@ public class Membership {
     private Integer maxRenewal;
     @Column(name = "reserve", nullable = false)
     private Integer reserve;
-    @Column(name = "membership_duration", nullable = false)
-    private Integer duration;
 
     public Membership(Integer type){
         if(type == 1){
             this.id = 1L;
+            this.type = "Free";
+            this.membershipFee = 0;
+            this.maxBook = 0;
+            this.maxRenewal = 0;
+            this.reserve = 0;
+        } else if(type == 2){
+            this.id = 2L;
             this.type = "Regular";
-            this.membershipFee = 30;
+            this.membershipFee = 50000;
             this.maxBook = 3;
             this.maxRenewal = 2;
             this.reserve = 2;
-            this.duration = 12;
-        } else if(type == 2){
-            this.id = 2L;
-            this.type = "Premium";
-            this.membershipFee = 50;
-            this.maxBook = 5;
-            this.maxRenewal = 3;
-            this.reserve = 3;
-            this.duration = 12;
         } else if(type == 3){
             this.id = 3L;
             this.type = "Premium";
-            this.membershipFee = 20;
+            this.membershipFee = 75000;
+            this.maxBook = 5;
+            this.maxRenewal = 3;
+            this.reserve = 3;
+        } else if(type == 4){
+            this.id = 4L;
+            this.type = "Student";
+            this.membershipFee = 30000;
             this.maxBook = 4;
             this.maxRenewal = 2;
             this.reserve = 1;
-            this.duration = 6;
         }
     }
 }

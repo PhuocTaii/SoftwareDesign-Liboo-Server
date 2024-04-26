@@ -1,12 +1,13 @@
 package com.btv.app.features.renewal.model;
 
-import com.btv.app.features.book.model.Book;
-import com.btv.app.features.user.models.User;
+import com.btv.app.features.transaction.models.Transaction;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
 @Entity
+@Data
 @Table(name = "renewal")
 public class Renewal {
     @Id
@@ -14,22 +15,14 @@ public class Renewal {
     private Long id;
 
     @ManyToOne
-    private User userId;
-
-    @OneToOne
-    private Book bookId;
+    @JoinColumn(name = "transaction_id", nullable = false)
+    private Transaction transaction;
 
     @Column(name = "request_date", nullable = false)
     private LocalDate requestDate;
 
-    @Column(name = "status", nullable = false, columnDefinition = "boolean default false")
-    private Boolean status;
-
-    @Column(name = "approve_date", nullable = false)
-    private LocalDate approveDate;
-
     @PrePersist
-    protected void onCreate() {
+    private void onCreate() {
         this.requestDate = LocalDate.now();
     }
 }
