@@ -34,7 +34,7 @@ public class Transaction {
     @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
-    @Column(name = "return_date", nullable = false)
+    @Column(name = "return_date")
     private LocalDate returnDate;
 
     @Column(name = "fine")

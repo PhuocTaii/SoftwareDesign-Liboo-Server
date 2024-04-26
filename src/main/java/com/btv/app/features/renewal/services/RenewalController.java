@@ -39,7 +39,6 @@ public class RenewalController {
     @PostMapping("/user/request-renewal")
     public ResponseEntity<Renewal> requestRenewal(@ModelAttribute Renewal renewal) {
         try {
-            System.out.println(renewal);
             Renewal res = renewalService.requestRenewal(renewal);
             if(res == null)
                 return ResponseEntity.status(400).build();

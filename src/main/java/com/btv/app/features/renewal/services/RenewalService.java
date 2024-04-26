@@ -40,14 +40,13 @@ public class RenewalService {
     public Boolean checkIfRenewalValid(Transaction transaction) {
         // check membership
         Membership membership = transaction.getUser().getMembership();
-        if(transaction.getRenewalCount() > membership.getMaxRenewal())
-            return false;
-
-        // check time
-        if(LocalDate.now().isBefore(transaction.getDueDate())) {
+        if(transaction.getRenewalCount() >= membership.getMaxRenewal()) {
             return false;
         }
-
+        // check time
+        if(!LocalDate.now().isBefore(transaction.getDueDate())) {
+            return false;
+        }
         return true;
     }
 }
