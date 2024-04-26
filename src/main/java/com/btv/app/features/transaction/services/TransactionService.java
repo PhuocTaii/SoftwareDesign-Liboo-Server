@@ -27,4 +27,9 @@ public class TransactionService {
             return null;
         }
     }
+
+    public Transaction increaseRenewalCount(Transaction transaction){
+        transaction.setRenewalCount(transaction.getRenewalCount() + 1);
+        return transactionRepository.save(transaction);
+    }
 }

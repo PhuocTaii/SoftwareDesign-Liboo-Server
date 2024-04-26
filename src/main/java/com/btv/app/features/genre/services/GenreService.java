@@ -2,7 +2,6 @@ package com.btv.app.features.genre.services;
 
 import com.btv.app.features.genre.model.Genre;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 

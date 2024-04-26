@@ -1,7 +1,6 @@
 package com.btv.app.features.renewal.model;
 
-import com.btv.app.features.book.model.Book;
-import com.btv.app.features.user.models.User;
+import com.btv.app.features.transaction.models.Transaction;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,12 +15,8 @@ public class Renewal {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
-
-    @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
-        private Book bookId;
+    @JoinColumn(name = "transaction_id", nullable = false)
+    private Transaction transaction;
 
     @Column(name = "request_date", nullable = false)
     private LocalDate requestDate;

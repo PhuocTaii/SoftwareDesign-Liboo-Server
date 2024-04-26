@@ -33,9 +33,6 @@ public class MembershipService {
         if(updateMem.getMembershipFee() != null){
             curMem.setMembershipFee(updateMem.getMembershipFee());
         }
-        if(updateMem.getDuration() != null) {
-            curMem.setDuration(updateMem.getDuration());
-        }
         if(updateMem.getReserve() != null) {
             curMem.setReserve(updateMem.getReserve());
         }

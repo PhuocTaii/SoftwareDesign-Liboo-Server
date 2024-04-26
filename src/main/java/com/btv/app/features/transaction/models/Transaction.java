@@ -22,7 +22,7 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
@@ -37,10 +37,10 @@ public class Transaction {
     @Column(name = "return_date", nullable = false)
     private LocalDate returnDate;
 
-    @Column(name = "fine", nullable = false, columnDefinition = "integer default 0")
-    private Number fine;
+    @Column(name = "fine")
+    private Integer fine;
 
-    @Column(name = "renewal_count", nullable = false, columnDefinition = "integer default 0")
+    @Column(name = "renewal_count")
     private Integer renewalCount;
 
     @PrePersist
