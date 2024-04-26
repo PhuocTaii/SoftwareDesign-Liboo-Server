@@ -9,5 +9,4 @@ import java.util.List;
 
 @Repository
 public interface RenewalRepository extends JpaRepository<Renewal, Long> {
-    List<Renewal> findByUserId_Id(Long id);
 }
