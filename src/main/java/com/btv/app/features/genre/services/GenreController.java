@@ -2,9 +2,7 @@ package com.btv.app.features.genre.services;
 
 import com.btv.app.features.genre.model.Genre;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
