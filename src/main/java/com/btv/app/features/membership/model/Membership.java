@@ -26,7 +26,7 @@ public class Membership {
     private Integer reserve;
 
     public Membership(Integer type){
-        if(type == 0){
+        if(type == 1){
             this.id = 1L;
             this.type = "Free";
             this.membershipFee = 0;
