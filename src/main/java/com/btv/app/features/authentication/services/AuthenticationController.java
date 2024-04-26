@@ -25,6 +25,7 @@ public class AuthenticationController {
         try{
             return ResponseEntity.ok(authenticationService.registerAccount(request));
         } catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
