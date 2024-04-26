@@ -27,4 +27,13 @@ public class RenewalService {
         Optional<Renewal> optionalRenewal = renewalRepository.findById(id);
         return optionalRenewal.orElse(null);
     }
+
+    public Renewal requestRenewal(Renewal renewal){
+        try {
+            return renewalRepository.save(renewal);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
 }

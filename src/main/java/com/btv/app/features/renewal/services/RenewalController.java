@@ -1,15 +1,13 @@
 package com.btv.app.features.renewal.services;
 
 import com.btv.app.features.renewal.model.Renewal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/renewal")
+@RequestMapping("api")
 public class RenewalController {
     private final RenewalService renewalService;
 
@@ -17,22 +15,32 @@ public class RenewalController {
         this.renewalService = renewalService;
     }
 
-    @GetMapping("/getAllRenewals")
-    public List<Renewal> getAllRenewals(){
+    @GetMapping("/librarian/getAllRenewals")
+    public ResponseEntity<List<Renewal>> getAllRenewals(){
         try {
-            return renewalService.getAllRenewals();
+            List<Renewal> res = renewalService.getAllRenewals();
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
         }
     }
-    @GetMapping("/getRenewalByID/{id}")
-    public Renewal getRenewalByID(@PathVariable("id") Long id){
+    @GetMapping("/librarian/getRenewalByID/{id}")
+    public ResponseEntity<Renewal> getRenewalByID(@PathVariable("id") Long id){
         try{
-            return renewalService.getRenewalByID(id);
+            Renewal res = renewalService.getRenewalByID(id);
+            return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PostMapping("/user/requestRenewal")
+    public ResponseEntity<Renewal> requestRenewal(@RequestBody Renewal renewal){
+        try {
+            Renewal res = renewalService.requestRenewal(renewal);
+            return ResponseEntity.status(200).body(res);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 }
