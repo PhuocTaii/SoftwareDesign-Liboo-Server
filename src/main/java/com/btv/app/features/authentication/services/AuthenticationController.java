@@ -25,13 +25,14 @@ public class AuthenticationController {
         try{
             return ResponseEntity.ok(authenticationService.registerAccount(request));
         } catch (Exception e){
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@ModelAttribute AuthenticationRequest request){
+        if(authenticationService.login(request) == null)
+            return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(authenticationService.login(request));
     }
 }

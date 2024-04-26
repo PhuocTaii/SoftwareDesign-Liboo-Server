@@ -4,6 +4,7 @@ package com.btv.app.features.authentication.services;
 import com.btv.app.features.authentication.model.AuthenticationRequest;
 import com.btv.app.features.authentication.model.AuthenticationResponse;
 import com.btv.app.features.authentication.model.RegisterRequest;
+import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserRepository;
 import com.btv.app.jwt.JwtService;
@@ -37,6 +38,7 @@ public class AuthenticationService {
         userRepository.save(user);
         var jwt = jwtProvider.generateToken(user);
         return AuthenticationResponse.builder()
+                .user(user)
                 .token(jwt)
                 .build();
     }
@@ -50,8 +52,12 @@ public class AuthenticationService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
+        if(user.getRole() != Role.USER){
+            return null;
+        }
         var jwt = jwtProvider.generateToken(user);
         return AuthenticationResponse.builder()
+                .user(user)
                 .token(jwt)
                 .build();
     }
