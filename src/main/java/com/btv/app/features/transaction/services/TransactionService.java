@@ -11,6 +11,7 @@ import java.util.*;
 @Service
 @AllArgsConstructor
 public class TransactionService {
+    private final int RENEWAL_DAYS = 7;
     private final TransactionRepository transactionRepository;
     public List<Transaction> getAllTransaction(){
         return transactionRepository.findAll();
@@ -30,6 +31,11 @@ public class TransactionService {
 
     public Transaction increaseRenewalCount(Transaction transaction){
         transaction.setRenewalCount(transaction.getRenewalCount() + 1);
+        return transactionRepository.save(transaction);
+    }
+
+    public Transaction extendDueDate(Transaction transaction){
+        transaction.setDueDate(transaction.getDueDate().plusDays(RENEWAL_DAYS));
         return transactionRepository.save(transaction);
     }
 }
