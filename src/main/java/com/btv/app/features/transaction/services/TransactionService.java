@@ -1,5 +1,6 @@
 package com.btv.app.features.transaction.services;
 
+import com.btv.app.features.book.model.Book;
 import com.btv.app.features.transaction.models.Transaction;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
@@ -13,12 +14,18 @@ import java.util.*;
 @AllArgsConstructor
 public class TransactionService {
     private final TransactionRepository transactionRepository;
+    private final Integer LATE_FINE = 5000;
     public List<Transaction> getAllTransaction(){
         return transactionRepository.findAll();
     }
 
     public List<Transaction> getTransactionByUser(Long userId){
         return transactionRepository.findByUserId_Id(userId);
+    }
+
+    public Transaction getTransactionById(Long id){
+        Optional<Transaction> optionalTransaction = transactionRepository.findById(id);
+        return optionalTransaction.orElse(null);
     }
 
     public Transaction addTransaction(Transaction transaction){
@@ -44,8 +51,21 @@ public class TransactionService {
         return transactionRepository.findByUserId_IdAndBookId_Id(userId, bookId);
     }
 
-    public Transaction returnBook(Transaction transaction){
+    public Transaction returnBook(Transaction transaction, Integer diff){
         transaction.setReturnDate(LocalDate.now());
+        if(diff > 0){
+            transaction.setFine(diff * LATE_FINE);
+        }
+        return transactionRepository.save(transaction);
+    }
+
+    public Transaction increaseRenewalCount(Transaction transaction){
+        transaction.setRenewalCount(transaction.getRenewalCount() + 1);
+        return transactionRepository.save(transaction);
+    }
+
+    public Transaction updateFine(Transaction transaction, Book book){
+        transaction.setFine(book.getPrice() * 2);
         return transactionRepository.save(transaction);
     }
 }

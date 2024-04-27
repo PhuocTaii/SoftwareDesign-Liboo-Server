@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping("admin/addUser")
-        public ResponseEntity<User> addUser(@ModelAttribute User user){
+    public ResponseEntity<User> addUser(@ModelAttribute User user){
         try{
             User res = userService.addUser(user);
             return ResponseEntity.status(200).body(res);

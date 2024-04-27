@@ -1,10 +1,7 @@
 package com.btv.app.features.authentication.model;
 
 import com.btv.app.features.user.models.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder

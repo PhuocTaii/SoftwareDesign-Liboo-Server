@@ -74,4 +74,19 @@ public class BookService {
         book.setImage(image);
         return bookRepository.save(book);
     }
+
+    public Book increaseBookBorrowed(Book book){
+        book.setBorrowed(book.getBorrowed() + 1);
+        return bookRepository.save(book);
+    }
+
+    public Book decreaseBookBorrowed(Book book){
+        book.setBorrowed(book.getBorrowed() - 1);
+        return bookRepository.save(book);
+    }
+
+    public Book decreaseBookAmount(Book book){
+        book.setQuantity(book.getQuantity() - 1);
+        return bookRepository.save(book);
+    }
 }
