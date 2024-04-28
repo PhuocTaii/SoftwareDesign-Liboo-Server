@@ -35,6 +35,8 @@ public class SecurityConfiguration{
                 .authorizeHttpRequests(req ->
                         req
                             .requestMatchers("/api/authentication/**").permitAll()
+                            .requestMatchers("/api/getAllBooks").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
+                            .requestMatchers("/api/reservations/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
                             .requestMatchers("/api/transaction/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
                             .requestMatchers("/api/getAllBooks").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/getBookByID/**").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
@@ -50,14 +52,14 @@ public class SecurityConfiguration{
 
         return http.build();
     }
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(@NonNull CorsRegistry registry) {
-//                registry.addMapping("/**").allowedOrigins("http://localhost:3000");
-//            }
-//        };
-//    }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+            }
+        };
+    }
 }
 

@@ -2,15 +2,12 @@ package com.btv.app.features.transaction.models;
 
 
 import com.btv.app.features.book.model.Book;
-import com.btv.app.features.membership.model.Membership;
-import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -25,30 +22,31 @@ public class Transaction {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
+    @ManyToMany
+    @JoinTable(
+            name = "transaction_book",
+            joinColumns = @JoinColumn(name = "transaction_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    private List<Book> books = new ArrayList<>();
 
     @Column(name = "borrowed_date", nullable = false)
     private LocalDate borrowedDate;
 
-    @Column(name = "due_date", nullable = false)
-    private LocalDate dueDate;
+    @ElementCollection
+    private List<LocalDate> dueDates = new ArrayList<>();
 
-    @Column(name = "return_date")
-    private LocalDate returnDate;
+    @ElementCollection
+    private List<LocalDate> returnDates = new ArrayList<>();
+
+    @ElementCollection
+    private List<Integer> renewalCounts = new ArrayList<>();
 
     @Column(name = "fine")
     private Integer fine;
-
-    @Column(name = "renewal_count")
-    private Integer renewalCount;
-
     @PrePersist
     private void onCreate() {
-        renewalCount = 0;
-        fine = 0;
         borrowedDate = LocalDate.now();
-        dueDate = borrowedDate.plusDays(30);
+        fine = 0;
     }
 }
