@@ -20,6 +20,7 @@ import java.util.*;
 @AllArgsConstructor
 public class TransactionController {
     private final TransactionService transactionService;
+    private final TransactionBookService transactionBookService;
     private final BookService bookService;
     private final UserService userService;
 
@@ -57,44 +58,52 @@ public class TransactionController {
     }
 
     @PostMapping("librarian/add-transaction")
-    public ResponseEntity<Transaction> addTransaction(@ModelAttribute Transaction transaction){
+    public ResponseEntity<Transaction> addTransaction(@ModelAttribute("userId") Long userId, @ModelAttribute("bookIds") List<Long> bookIds){
         try{
-            //Check if user have role "USER"
-            User user = transaction.getUser();
-            List<Book> books = transaction.getBooks();
+//            //Check if user have role "USER"
+//            User user = transaction.getUser();
+//            List<Book> books = transaction.getBooks();
+//
+//            Role role = user.getRole();
+//            if(role != Role.USER){
+//                System.out.println("User is not a member");
+//                return ResponseEntity.status(400).build();
+//            }
+//
+//            if(user.getAvailableBorrow() < transaction.getBooks().size()){
+//                System.out.println("User is not allowed to borrow more books");
+//                return ResponseEntity.status(403).build();
+//            }
+//
+//            Membership mem = user.getMembership();
+//            int maxBorrow = mem.getMaxBook();
+//            List<Transaction> transactions = transactionService.getTransactionByUser(transaction.getUser().getId());
 
-            Role role = user.getRole();
-            if(role != Role.USER){
-                System.out.println("User is not a member");
-                return ResponseEntity.status(400).build();
+//            //Check if user is borrowing the same book
+//            for(Book b : books){
+//                Boolean isBorrowed = transactionService.isBookBorrowed(user.getId(),b.getId());
+//                if(isBorrowed){
+//                    System.out.println("Book is already borrowed");
+//                    return ResponseEntity.status(400).build();
+//                }
+//            }
+
+
+//            //Check if user has reached maximum borrow limit
+//            int nullReturn = transactionService.getNullReturnDateTransactions(transactions);
+//            if(Objects.equals(nullReturn, maxBorrow)){
+//                System.out.println("User has reached maximum borrow limit");
+//                return ResponseEntity.status(400).build();
+//            }
+
+            User user = userService.getUserByID(userId);
+            List<Book> books = new ArrayList<>();
+            for (Long bookId : bookIds) {
+                Book book = bookService.getBookByID(bookId);
+                books.add(book);
             }
-
-            if(user.getAvailableBorrow() < transaction.getBooks().size()){
-                System.out.println("User is not allowed to borrow more books");
-                return ResponseEntity.status(403).build();
-            }
-
-            Membership mem = user.getMembership();
-            int maxBorrow = mem.getMaxBook();
-            List<Transaction> transactions = transactionService.getTransactionByUser(transaction.getUser().getId());
-
-            //Check if user is borrowing the same book
-            for(Book b : books){
-                Boolean isBorrowed = transactionService.isBookBorrowed(user.getId(),b.getId());
-                if(isBorrowed){
-                    System.out.println("Book is already borrowed");
-                    return ResponseEntity.status(400).build();
-                }
-            }
-
-
-            //Check if user has reached maximum borrow limit
-            int nullReturn = transactionService.getNullReturnDateTransactions(transactions);
-            if(Objects.equals(nullReturn, maxBorrow)){
-                System.out.println("User has reached maximum borrow limit");
-                return ResponseEntity.status(400).build();
-            }
-            Transaction res = transactionService.addTransaction(transaction);
+            Transaction res = transactionService.addTransaction(user);
+            transactionBookService.addTransactionBooks(res, books);
             //update book borrowed count
             for(Book b: books){
                 bookService.increaseBookBorrowed(b);
@@ -107,73 +116,73 @@ public class TransactionController {
         }
     }
 
-    @PutMapping("librarian/return-book/{transactionId}/{bookId}")
-    public ResponseEntity<Transaction> returnBook(@PathVariable("transactionId") Long transactionId, @PathVariable("bookId") Long bookId){
-        try{
-            Transaction transaction = transactionService.getTransactionById(transactionId);
-            Book returnBook = bookService.getBookByID(bookId);
-            if(transaction == null){
-                System.out.println("Transaction not found");
-                return ResponseEntity.status(404).build();
-            }
-
-            if(returnBook == null){
-                System.out.println("Book not found");
-                return ResponseEntity.status(404).build();
-            }
-
-            int index = transaction.getBooks().indexOf(returnBook);
-            if(!transaction.getReturnDates().get(index).toString().equals(LocalDate.EPOCH.toString())){
-                System.out.println("Book is returned already");
-                return ResponseEntity.status(400).build();
-            }
-
-            //Find difference between due date and return date
-            int diff = Math.toIntExact(ChronoUnit.DAYS.between(transaction.getDueDates().get(index), LocalDate.now()));
-            if(diff > 0){
-                System.out.println("User is late!");
-            }
-            Transaction res = transactionService.returnBook(transaction, diff, index);
-            //update book borrowed count
-            bookService.decreaseBookBorrowed(returnBook);
-            userService.increaseAvailableBorrow(transaction.getUser());
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            System.out.println(e);
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    @PutMapping("user/lost-book/{transactionId}/{bookId}")
-    public ResponseEntity<Transaction> lostBook(@PathVariable("transactionId") Long transactionId, @PathVariable("bookId") Long bookId){
-        try{
-            Transaction transaction = transactionService.getTransactionById(transactionId);
-            Book book = bookService.getBookByID(bookId);
-
-            if(transaction == null){
-                System.out.println("Transaction not found");
-                return ResponseEntity.status(404).build();
-            }
-
-            if(book == null){
-                System.out.println("Book not found");
-                return ResponseEntity.status(404).build();
-            }
-
-            List<Book> bookList = transaction.getBooks();
-            if(!bookList.contains(book)){
-                System.out.println("Book not found in transaction");
-                return ResponseEntity.status(404).build();
-            }
-            //update book borrowed count
-            Transaction res = transactionService.lostBookHandle(transaction, book);
-            bookService.decreaseBookAmount(book);
-            bookService.decreaseBookBorrowed(book);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
+//    @PutMapping("librarian/return-book/{transactionId}/{bookId}")
+//    public ResponseEntity<Transaction> returnBook(@PathVariable("transactionId") Long transactionId, @PathVariable("bookId") Long bookId){
+//        try{
+//            Transaction transaction = transactionService.getTransactionById(transactionId);
+//            Book returnBook = bookService.getBookByID(bookId);
+//            if(transaction == null){
+//                System.out.println("Transaction not found");
+//                return ResponseEntity.status(404).build();
+//            }
+//
+//            if(returnBook == null){
+//                System.out.println("Book not found");
+//                return ResponseEntity.status(404).build();
+//            }
+//
+//            int index = transaction.getBooks().indexOf(returnBook);
+//            if(!transaction.getReturnDates().get(index).toString().equals(LocalDate.EPOCH.toString())){
+//                System.out.println("Book is returned already");
+//                return ResponseEntity.status(400).build();
+//            }
+//
+//            //Find difference between due date and return date
+//            int diff = Math.toIntExact(ChronoUnit.DAYS.between(transaction.getDueDates().get(index), LocalDate.now()));
+//            if(diff > 0){
+//                System.out.println("User is late!");
+//            }
+//            Transaction res = transactionService.returnBook(transaction, diff, index);
+//            //update book borrowed count
+//            bookService.decreaseBookBorrowed(returnBook);
+//            userService.increaseAvailableBorrow(transaction.getUser());
+//            return ResponseEntity.status(200).body(res);
+//        } catch (Exception e) {
+//            System.out.println(e);
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
+//
+//    @PutMapping("user/lost-book/{transactionId}/{bookId}")
+//    public ResponseEntity<Transaction> lostBook(@PathVariable("transactionId") Long transactionId, @PathVariable("bookId") Long bookId){
+//        try{
+//            Transaction transaction = transactionService.getTransactionById(transactionId);
+//            Book book = bookService.getBookByID(bookId);
+//
+//            if(transaction == null){
+//                System.out.println("Transaction not found");
+//                return ResponseEntity.status(404).build();
+//            }
+//
+//            if(book == null){
+//                System.out.println("Book not found");
+//                return ResponseEntity.status(404).build();
+//            }
+//
+//            List<Book> bookList = transaction.getBooks();
+//            if(!bookList.contains(book)){
+//                System.out.println("Book not found in transaction");
+//                return ResponseEntity.status(404).build();
+//            }
+//            //update book borrowed count
+//            Transaction res = transactionService.lostBookHandle(transaction, book);
+//            bookService.decreaseBookAmount(book);
+//            bookService.decreaseBookBorrowed(book);
+//            return ResponseEntity.status(200).body(res);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
 }
 
 
