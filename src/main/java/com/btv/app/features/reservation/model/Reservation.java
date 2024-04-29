@@ -24,8 +24,8 @@ public class Reservation {
 
     @ManyToMany
     @JoinTable(
-            name = "transaction_book",
-            joinColumns = @JoinColumn(name = "transaction_id"),
+            name = "reservation_book",
+            joinColumns = @JoinColumn(name = "reservation_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private List<Book> books = new ArrayList<>();

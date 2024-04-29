@@ -69,6 +69,11 @@ public class TransactionController {
                 return ResponseEntity.status(400).build();
             }
 
+            if(user.getAvailableBorrow() < transaction.getBooks().size()){
+                System.out.println("User is not allowed to borrow more books");
+                return ResponseEntity.status(403).build();
+            }
+
             Membership mem = user.getMembership();
             int maxBorrow = mem.getMaxBook();
             List<Transaction> transactions = transactionService.getTransactionByUser(transaction.getUser().getId());
@@ -94,6 +99,7 @@ public class TransactionController {
             for(Book b: books){
                 bookService.increaseBookBorrowed(b);
             }
+            userService.decreaseAvailableBorrow(user, books.size());
             return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,9 +123,6 @@ public class TransactionController {
             }
 
             int index = transaction.getBooks().indexOf(returnBook);
-            System.out.println(transaction.getReturnDates());
-            System.out.println(LocalDate.EPOCH);
-            System.out.println(transaction.getReturnDates().get(index));
             if(!transaction.getReturnDates().get(index).toString().equals(LocalDate.EPOCH.toString())){
                 System.out.println("Book is returned already");
                 return ResponseEntity.status(400).build();
@@ -133,7 +136,7 @@ public class TransactionController {
             Transaction res = transactionService.returnBook(transaction, diff, index);
             //update book borrowed count
             bookService.decreaseBookBorrowed(returnBook);
-
+            userService.increaseAvailableBorrow(transaction.getUser());
             return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
             System.out.println(e);
