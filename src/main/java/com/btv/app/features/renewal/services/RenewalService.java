@@ -4,27 +4,25 @@ import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.renewal.model.Renewal;
 import com.btv.app.features.transaction.models.Transaction;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class RenewalService {
+    private final int PAGE_SIZE = 10;
     private final RenewalRepository renewalRepository;
 
-    public List<Renewal> getAllRenewals(){
-        try {
-            return renewalRepository.findAll();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Page<Renewal> getAllRenewals(int pageNumber) {
+        return renewalRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
-    public Renewal getRenewalByID(Long id){
-        return renewalRepository.findById(id).orElse(null);
+    public Page<Renewal> getRenewalByUserID(Long id, int pageNumber) {
+        return renewalRepository.findByTransaction_User_Id(id, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public Renewal requestRenewal(Renewal renewal) {

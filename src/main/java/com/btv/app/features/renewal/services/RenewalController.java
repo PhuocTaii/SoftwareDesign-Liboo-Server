@@ -1,9 +1,11 @@
 package com.btv.app.features.renewal.services;
 
+import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.renewal.model.Renewal;
 import com.btv.app.features.transaction.services.TransactionService;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,21 +18,32 @@ import java.util.List;
 public class RenewalController {
     private final RenewalService renewalService;
     private final TransactionService transactionService;
+    private final AuthenticationService authenticationService;
 
-    @GetMapping("/librarian/all-renewals")
-    public ResponseEntity<List<Renewal>> getAllRenewals(){
+    @AllArgsConstructor
+    public static class RenewalListResponse {
+        public List<Renewal> renewals;
+        public int pageNumber;
+        public int totalPages;
+        public long totalElements;
+    }
+
+    @GetMapping("/librarian/renewals/{page-number}")
+    public ResponseEntity<RenewalListResponse> getRenewals(@PathVariable("page-number") int pageNumber){
         try {
-            List<Renewal> res = renewalService.getAllRenewals();
-            return ResponseEntity.status(200).body(res);
+            Page<Renewal> res = renewalService.getAllRenewals(pageNumber);
+            return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }
-    @GetMapping("/librarian/renewal/{id}")
-    public ResponseEntity<Renewal> getRenewalByID(@PathVariable("id") Long id){
+    @GetMapping("/user/renewals/{page-number}")
+    public ResponseEntity<RenewalListResponse> getRenewalsByUserID(@PathVariable("page-number") int pageNumber){
         try{
-            Renewal res = renewalService.getRenewalByID(id);
-            return ResponseEntity.status(200).body(res);
+            User user = authenticationService.getCurrentUser();
+            Page<Renewal> res = renewalService.getRenewalByUserID(user.getId(), pageNumber);
+            return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
