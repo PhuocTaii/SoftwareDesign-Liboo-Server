@@ -1,9 +1,9 @@
 package com.btv.app.features.transaction.services;
 
-import com.btv.app.features.intermediate.TransactionBook;
+import com.btv.app.features.transaction.models.TransactionBook;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface TransactionBookRepository extends JpaRepository<TransactionBook, Long> {
+
+    TransactionBook findByTransaction_IdAndBook_Id(Long id, Long id1);
 }

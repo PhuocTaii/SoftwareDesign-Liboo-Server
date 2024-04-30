@@ -149,6 +149,7 @@ public class ReservationController {
             Reservation res = reservationService.modifyReservationStatus(curRes, status);
             return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }

@@ -1,6 +1,7 @@
 package com.btv.app.features.authentication.model;
 
 import com.btv.app.features.user.models.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Data
@@ -8,6 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
-    private String token;
+    @JsonProperty("access_token")
+    private String accessToken;
+
     private User user;
+
+    @JsonProperty("refresh_token")
+    private String refreshToken;
 }

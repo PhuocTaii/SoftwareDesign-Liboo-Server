@@ -1,21 +1,16 @@
-package com.btv.app.features.intermediate;
+package com.btv.app.features.transaction.models;
 
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.transaction.models.Transaction;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDate;
 
 @Entity
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "transaction_book")
 public class TransactionBook {
     @Id
@@ -31,20 +26,19 @@ public class TransactionBook {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    @Column(name = "renewal_count")
+    @Column(name = "renewal_count", nullable = false)
     private Integer renewalCount;
+
+    @Column(name = "due_date", nullable = false)
+    private LocalDate dueDate;
 
     @Column(name = "return_date")
     private LocalDate returnDate;
 
-    @Column(name = "due_date")
-    private LocalDate dueDate;
-
-
-//    @PrePersist
-//    private void onCreate() {
-//        this.renewalCount = 0;
-//        this.returnDate = LocalDate.EPOCH;
-//        this.dueDate = LocalDate.now().plusDays(30);
-//    }
+    @PrePersist
+    private void onCreate() {
+        dueDate = LocalDate.now().plusDays(30);
+        renewalCount = 0;
+        returnDate = null;
+    }
 }
