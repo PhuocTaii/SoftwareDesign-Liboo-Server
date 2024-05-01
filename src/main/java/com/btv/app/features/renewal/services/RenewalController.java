@@ -1,17 +1,21 @@
 package com.btv.app.features.renewal.services;
 
+import com.btv.app.exception.MyException;
 import com.btv.app.features.authentication.services.AuthenticationService;
+import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.renewal.model.Renewal;
 import com.btv.app.features.transaction.services.TransactionBookService;
-import com.btv.app.features.transaction.services.TransactionService;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api")
@@ -43,7 +47,7 @@ public class RenewalController {
     public ResponseEntity<RenewalListResponse> getRenewalsByUserID(@PathVariable("page-number") int pageNumber){
         try{
             User user = authenticationService.getCurrentUser();
-            Page<Renewal> res = renewalService.getRenewalByUserID(user.getId(), pageNumber);
+            Page<Renewal> res = renewalService.getRenewalByUser(user, pageNumber);
             return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
@@ -52,21 +56,31 @@ public class RenewalController {
 
     @PostMapping("/user/request-renewal")
     public ResponseEntity<Renewal> requestRenewal(@ModelAttribute Renewal renewal) {
-        try {
-            System.out.println(renewal);
-            if(renewalService.checkIfRenewBelongToUser(renewal.getTransactionBook())) {
-                return ResponseEntity.status(403).build();
-            }
-            if(renewalService.checkIfRenewalValid(renewal.getTransactionBook())) {
-                renewalService.requestRenewal(renewal);
-                transactionBookService.increaseRenewalCount(renewal.getTransactionBook());
-                transactionBookService.extendDueDate(renewal.getTransactionBook());
-                return ResponseEntity.status(200).body(renewal);
-            }
-            return ResponseEntity.status(400).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
+        // check if this transaction belong to current user
+        if(!Objects.equals(authenticationService.getCurrentUser().getId(), renewal.getTransactionBook().getTransaction().getUser().getId())) {
+            throw new MyException(HttpStatus.FORBIDDEN, "Not have right to renew this borrowing!");
         }
+
+        // check membership
+        Membership membership = renewal.getTransactionBook().getTransaction().getUser().getMembership();
+        if(renewal.getTransactionBook().getRenewalCount() >= membership.getMaxRenewal()) {
+            throw new MyException(HttpStatus.BAD_REQUEST, "You have reached the limit times of renewal");
+        }
+
+        // check if returned
+        if(renewal.getTransactionBook().getReturnDate() != null) {
+            throw new MyException(HttpStatus.BAD_REQUEST, "You have already returned this book");
+        }
+
+        // check time
+        if(!LocalDate.now().isBefore(renewal.getTransactionBook().getDueDate())) {
+            throw new MyException(HttpStatus.BAD_REQUEST, "You cannot renew now");
+        }
+
+        renewalService.requestRenewal(renewal);
+        transactionBookService.increaseRenewalCount(renewal.getTransactionBook());
+        transactionBookService.extendDueDate(renewal.getTransactionBook());
+
+        return ResponseEntity.status(200).body(renewal);
     }
 }
