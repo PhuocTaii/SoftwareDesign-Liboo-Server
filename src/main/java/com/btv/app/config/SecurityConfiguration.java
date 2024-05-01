@@ -48,6 +48,7 @@ public class SecurityConfiguration{
                             .requestMatchers("/api/admin/**").hasAuthority(ADMIN.name())
                             .requestMatchers("/api/user/**").hasAuthority(USER.name())
                             .requestMatchers("/api/librarian/**").hasAuthority(LIBRARIAN.name())
+                            .requestMatchers("/api/modify-user/**").hasAnyAuthority(USER.name(), ADMIN.name())
                             .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

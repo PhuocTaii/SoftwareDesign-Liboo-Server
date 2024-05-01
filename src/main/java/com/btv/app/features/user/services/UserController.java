@@ -56,8 +56,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("admin/modifyUser/{id}")
-    public ResponseEntity<User> modifyUser(@PathVariable("id") Long id, @ModelAttribute User user){
+    @PutMapping("/modify-user/{id}")
+    public ResponseEntity<User> modifyUser(@PathVariable("id") Long id, @RequestBody User user){
         try{
             User curUser = userService.getUserByID(id);
             if(curUser == null){
@@ -66,6 +66,7 @@ public class UserController {
             User res = userService.modifyUser(curUser, user);
             return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -84,7 +85,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/addUserImage/{id}")
+    @PutMapping("/add-user-image/{id}")
     public ResponseEntity<User> uploadUserImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile file){
         try{
             User curUser = userService.getUserByID(id);
