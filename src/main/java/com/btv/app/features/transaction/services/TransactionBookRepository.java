@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionBookRepository extends JpaRepository<TransactionBook, Long> {
 
+    TransactionBook findByTransaction_IdAndBook_Id(Long id, Long id1);
 }

@@ -1,10 +1,8 @@
 package com.btv.app.features.transaction.models;
 
 
-import com.btv.app.features.book.model.Book;
-import com.btv.app.features.membership.model.Membership;
-import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -24,31 +22,21 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
+    @OneToMany(mappedBy = "transaction")
+    private List<TransactionBook> transactionBooks;
 
     @Column(name = "borrowed_date", nullable = false)
     private LocalDate borrowedDate;
 
-    @Column(name = "due_date", nullable = false)
-    private LocalDate dueDate;
-
-    @Column(name = "return_date")
-    private LocalDate returnDate;
-
     @Column(name = "fine")
     private Integer fine;
-
-    @Column(name = "renewal_count")
-    private Integer renewalCount;
-
     @PrePersist
     private void onCreate() {
-        renewalCount = 0;
+        borrowedDate = LocalDate.now();
         fine = 0;
     }
 }

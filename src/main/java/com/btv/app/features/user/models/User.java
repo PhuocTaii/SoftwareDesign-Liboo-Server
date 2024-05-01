@@ -67,12 +67,16 @@ public class User implements UserDetails {
     @Column(name = "expiredDate")
     private LocalDate expiredDate;
 
+    @Column(name = "available_borrow")
+    private Integer availableBorrow;
+
     @PrePersist
     private void onCreate() {
         joinedDate = LocalDate.now();
         role = Role.USER;
         membership = new Membership(1);
         expiredDate = null;
+        availableBorrow = membership.getMaxBook();
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

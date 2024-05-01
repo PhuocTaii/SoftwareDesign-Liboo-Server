@@ -39,4 +39,8 @@ public class TransactionBookService {
         transactionBook.setDueDate(transactionBook.getDueDate().plusDays(RENEWAL_DAYS));
         return transactionBookRepository.save(transactionBook);
     }
+    public TransactionBook getTransactionBookByTransactionAndBook(Long transactionId, Long bookId) {
+        return transactionBookRepository.findByTransaction_IdAndBook_Id(transactionId, bookId);
+    }
+
 }

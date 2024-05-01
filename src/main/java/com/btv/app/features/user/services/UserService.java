@@ -1,14 +1,9 @@
 package com.btv.app.features.user.services;
-import com.btv.app.features.book.model.Book;
 import com.btv.app.features.image.model.Image;
+import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.user.models.User;
-import com.btv.app.features.user.services.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,4 +59,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User increaseAvailableBorrow(User user){
+        user.setAvailableBorrow(user.getAvailableBorrow() + 1);
+        return userRepository.save(user);
+    }
+
+    public User decreaseAvailableBorrow(User user, Integer quantity){
+        user.setAvailableBorrow(user.getAvailableBorrow() - quantity);
+        return userRepository.save(user);
+    }
+
+    public User modifyUserMembership(User user, Membership membership){
+        user.setMembership(membership);
+        user.setAvailableBorrow(membership.getMaxBook());
+        return userRepository.save(user);
+    }
 }

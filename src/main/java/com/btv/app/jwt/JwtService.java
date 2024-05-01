@@ -24,6 +24,8 @@ public class JwtService {
     private static final String JWT_SECRET = dotenv.get("JWT_SECRET");
     private static final long JWT_EXPIRATION = 86400000;
 
+    private static final long REFRESH_EXPIRATION = 86400000 * 7;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -43,6 +45,12 @@ public class JwtService {
             UserDetails userDetails
     ) {
         return buildToken(extraClaims, userDetails, JWT_EXPIRATION);
+    }
+
+    public String generateRefreshToken(
+            UserDetails userDetails
+    ) {
+        return buildToken(new HashMap<>(), userDetails, REFRESH_EXPIRATION);
     }
 
     private String buildToken(

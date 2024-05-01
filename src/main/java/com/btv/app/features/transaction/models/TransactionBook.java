@@ -22,6 +22,7 @@ public class TransactionBook {
 
     @ManyToOne
     @JoinColumn(name = "transaction_id", nullable = false)
+    @JsonBackReference
     private Transaction transaction;
 
     @ManyToOne
