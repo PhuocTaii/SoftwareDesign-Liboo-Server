@@ -35,23 +35,14 @@ public class RenewalController {
 
     @GetMapping("/librarian/renewals/{page-number}")
     public ResponseEntity<RenewalListResponse> getRenewals(@PathVariable("page-number") int pageNumber){
-        try {
-            Page<Renewal> res = renewalService.getAllRenewals(pageNumber);
-            return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
+        Page<Renewal> res = renewalService.getAllRenewals(pageNumber);
+        return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
     @GetMapping("/user/renewals/{page-number}")
-    public ResponseEntity<RenewalListResponse> getRenewalsByUserID(@PathVariable("page-number") int pageNumber){
-        try{
-            User user = authenticationService.getCurrentUser();
-            Page<Renewal> res = renewalService.getRenewalByUser(user, pageNumber);
-            return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+    public ResponseEntity<RenewalListResponse> getRenewalsByUser(@PathVariable("page-number") int pageNumber){
+        User user = authenticationService.getCurrentUser();
+        Page<Renewal> res = renewalService.getRenewalByUser(user, pageNumber);
+        return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     @PostMapping("/user/request-renewal")
