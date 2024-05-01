@@ -4,6 +4,7 @@ package com.btv.app.features.authentication.services;
 import com.btv.app.features.authentication.model.AuthenticationRequest;
 import com.btv.app.features.authentication.model.AuthenticationResponse;
 import com.btv.app.features.authentication.model.RegisterRequest;
+import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserRepository;
 import com.btv.app.jwt.JwtService;
@@ -16,6 +17,7 @@ import org.apache.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -57,7 +59,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse login(AuthenticationRequest request){
+    public AuthenticationResponse userLogin(AuthenticationRequest request){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -66,6 +68,9 @@ public class AuthenticationService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
+        if(user.getRole() != Role.USER){
+            return null;
+        }
         var jwt = jwtProvider.generateToken(user);
         var refreshJwt = jwtProvider.generateRefreshToken(user);
         return AuthenticationResponse.builder()

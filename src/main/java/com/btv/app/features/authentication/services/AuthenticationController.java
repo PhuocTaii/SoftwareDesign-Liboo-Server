@@ -38,11 +38,11 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping("user/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request){
-        if(authenticationService.login(request) == null)
+        if(authenticationService.userLogin(request) == null)
             return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(authenticationService.login(request));
+        return ResponseEntity.ok(authenticationService.userLogin(request));
     }
 
     @PostMapping("/refresh-token")
