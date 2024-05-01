@@ -2,6 +2,7 @@ package com.btv.app.features.renewal.services;
 
 import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.renewal.model.Renewal;
+import com.btv.app.features.transaction.services.TransactionBookService;
 import com.btv.app.features.transaction.services.TransactionService;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RenewalController {
     private final RenewalService renewalService;
-    private final TransactionService transactionService;
+    private final TransactionBookService transactionBookService;
     private final AuthenticationService authenticationService;
 
     @AllArgsConstructor
@@ -52,10 +53,14 @@ public class RenewalController {
     @PostMapping("/user/request-renewal")
     public ResponseEntity<Renewal> requestRenewal(@ModelAttribute Renewal renewal) {
         try {
-            if(renewalService.checkIfRenewalValid(renewal.getTransaction())) {
+            System.out.println(renewal);
+            if(renewalService.checkIfRenewBelongToUser(renewal.getTransactionBook())) {
+                return ResponseEntity.status(403).build();
+            }
+            if(renewalService.checkIfRenewalValid(renewal.getTransactionBook())) {
                 renewalService.requestRenewal(renewal);
-                transactionService.increaseRenewalCount(renewal.getTransaction());
-                transactionService.extendDueDate(renewal.getTransaction());
+                transactionBookService.increaseRenewalCount(renewal.getTransactionBook());
+                transactionBookService.extendDueDate(renewal.getTransactionBook());
                 return ResponseEntity.status(200).body(renewal);
             }
             return ResponseEntity.status(400).build();
