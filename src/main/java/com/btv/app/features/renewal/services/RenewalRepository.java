@@ -11,6 +11,5 @@ import java.util.List;
 
 @Repository
 public interface RenewalRepository extends JpaRepository<Renewal, Long> {
-//    Page<Renewal> findByTransaction_User_Id(Long id, Pageable pageable);
     Page<Renewal> findByTransactionBook_Transaction_User(User user, Pageable pageable);
 }
