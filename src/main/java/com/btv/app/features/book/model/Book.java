@@ -4,6 +4,7 @@ import com.btv.app.features.author.model.Author;
 import com.btv.app.features.genre.model.Genre;
 import com.btv.app.features.image.model.Image;
 import com.btv.app.features.publisher.model.Publisher;
+import com.btv.app.features.transaction.models.TransactionBook;
 import jakarta.persistence.*;
 import lombok.Data;
 

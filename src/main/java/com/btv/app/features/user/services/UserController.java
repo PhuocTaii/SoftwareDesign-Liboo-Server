@@ -1,8 +1,11 @@
 package com.btv.app.features.user.services;
 
 import com.btv.app.cloudinary.CloudinaryService;
+import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.image.model.Image;
+import com.btv.app.features.membership.model.Membership;
+import com.btv.app.features.membership.services.MembershipService;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final CloudinaryService cloudinaryService;
+    private final MembershipService membershipService;
+    private final AuthenticationService auth;
     @GetMapping("admin/getAllUsers")
     public ResponseEntity<List<User>> getAllUsers(){
         try {
@@ -89,6 +94,24 @@ public class UserController {
             Map data = cloudinaryService.upload(file);
             Image image = new Image(data.get("public_id").toString(), data.get("secure_url").toString());
             User res = userService.uploadImage(curUser, image);
+            return ResponseEntity.status(200).body(res);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PutMapping("user/modify-membership/{membershipId}")
+    public ResponseEntity<User> modifyMembership(@PathVariable("membershipId") Long membershipId){
+        try{
+            User curUser = auth.getCurrentUser();
+            if(curUser == null){
+                return ResponseEntity.status(404).build();
+            }
+            Membership membership = membershipService.getMembershipByID(membershipId);
+            if(membership == null){
+                return ResponseEntity.status(404).build();
+            }
+            User res = userService.modifyUserMembership(curUser, membership);
             return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();

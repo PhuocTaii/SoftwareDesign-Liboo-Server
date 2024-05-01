@@ -44,6 +44,7 @@ public class BookController {
             Book res = bookService.addBook(book);
             return ResponseEntity.status(200).body(res);
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(500).build();
         }
     }

@@ -31,22 +31,22 @@ public class RenewalService {
         return renewalRepository.save(renewal);
     }
 
-    public Boolean checkIfRenewalValid(Transaction transaction) {
-        // check membership
-        Membership membership = transaction.getUser().getMembership();
-        if(transaction.getRenewalCount() >= membership.getMaxRenewal()) {
-            return false;
-        }
-
-        // check if returned
-        if(transaction.getReturnDate() != null) {
-            return false;
-        }
-
-        // check time
-        if(!LocalDate.now().isBefore(transaction.getDueDate())) {
-            return false;
-        }
-        return true;
-    }
+//    public Boolean checkIfRenewalValid(Transaction transaction) {
+//        // check membership
+//        Membership membership = transaction.getUser().getMembership();
+//        if(transaction.getRenewalCount() >= membership.getMaxRenewal()) {
+//            return false;
+//        }
+//
+//        // check if returned
+//        if(transaction.getReturnDate() != null) {
+//            return false;
+//        }
+//
+//        // check time
+//        if(!LocalDate.now().isBefore(transaction.getDueDate())) {
+//            return false;
+//        }
+//        return true;
+//    }
 }

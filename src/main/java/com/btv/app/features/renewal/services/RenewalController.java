@@ -36,19 +36,19 @@ public class RenewalController {
         }
     }
 
-    @PostMapping("/user/request-renewal")
-    public ResponseEntity<Renewal> requestRenewal(@ModelAttribute Renewal renewal) {
-        try {
-            if(renewalService.checkIfRenewalValid(renewal.getTransaction())) {
-                renewalService.requestRenewal(renewal);
-                transactionService.increaseRenewalCount(renewal.getTransaction());
-                transactionService.extendDueDate(renewal.getTransaction());
-                return ResponseEntity.status(200).body(renewal);
-            }
-            return ResponseEntity.status(400).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
-        }
-    }
+//    @PostMapping("/user/request-renewal")
+//    public ResponseEntity<Renewal> requestRenewal(@ModelAttribute Renewal renewal) {
+//        try {
+//            if(renewalService.checkIfRenewalValid(renewal.getTransaction())) {
+//                renewalService.requestRenewal(renewal);
+//                transactionService.increaseRenewalCount(renewal.getTransaction());
+//                transactionService.extendDueDate(renewal.getTransaction());
+//                return ResponseEntity.status(200).body(renewal);
+//            }
+//            return ResponseEntity.status(400).build();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
 }
