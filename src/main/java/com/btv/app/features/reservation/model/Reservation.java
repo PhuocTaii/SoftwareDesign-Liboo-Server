@@ -3,16 +3,15 @@ package com.btv.app.features.reservation.model;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.user.models.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "reservation")
 public class Reservation {
     @Id

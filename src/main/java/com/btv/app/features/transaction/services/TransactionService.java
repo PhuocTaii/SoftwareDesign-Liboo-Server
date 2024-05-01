@@ -62,20 +62,10 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-//    public Transaction increaseRenewalCount(Transaction transaction, int index){
-//        transaction.setRenewalCount(transaction.getRenewalCount() + 1);
-//        return transactionRepository.save(transaction);
-//    }
-
     public Transaction lostBookHandle(Transaction transaction, Book book){
         int curFine = transaction.getFine();
         curFine += (book.getPrice() * 2);
         transaction.setFine(curFine);
         return transactionRepository.save(transaction);
     }
-
-//    public Transaction extendDueDate(Transaction transaction){
-//        transaction.setDueDate(transaction.getDueDate().plusDays(RENEWAL_DAYS));
-//        return transactionRepository.save(transaction);
-//    }
 }
