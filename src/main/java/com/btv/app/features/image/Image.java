@@ -1,4 +1,4 @@
-package com.btv.app.features.image.model;
+package com.btv.app.features.image;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

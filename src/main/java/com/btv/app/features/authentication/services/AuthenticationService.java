@@ -1,6 +1,7 @@
 package com.btv.app.features.authentication.services;
 
 
+import com.btv.app.exception.MyException;
 import com.btv.app.features.authentication.model.AuthenticationRequest;
 import com.btv.app.features.authentication.model.AuthenticationResponse;
 import com.btv.app.features.authentication.model.RegisterRequest;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,16 +62,21 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse userLogin(AuthenticationRequest request){
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e){
+            throw new MyException(HttpStatus.NOT_FOUND, "Wrong password");
+        }
+
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         if(user.getRole() != Role.USER){
-            return null;
+           return null;
         }
         var jwt = jwtProvider.generateToken(user);
         var refreshJwt = jwtProvider.generateRefreshToken(user);

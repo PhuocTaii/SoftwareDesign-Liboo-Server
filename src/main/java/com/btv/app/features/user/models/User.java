@@ -1,7 +1,7 @@
 package com.btv.app.features.user.models;
 
 
-import com.btv.app.features.image.model.Image;
+import com.btv.app.features.image.Image;
 import com.btv.app.features.membership.model.Membership;
 import jakarta.persistence.*;
 import lombok.*;

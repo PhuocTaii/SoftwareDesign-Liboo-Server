@@ -1,7 +1,9 @@
 package com.btv.app.features.genre.services;
 
+import com.btv.app.exception.MyException;
 import com.btv.app.features.genre.model.Genre;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,61 +14,44 @@ import java.util.List;
 @RequestMapping("api/admin")
 public class GenreController {
     private final GenreService genreService;
-    @GetMapping("/getAllGenres")
+    @GetMapping("/all-genres")
     public ResponseEntity<List<Genre>> getAllGenres(){
-        try {
-            List<Genre> res = genreService.getAllGenres();
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        List<Genre> res = genreService.getAllGenres();
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/getGenreByID/{id}")
+    @GetMapping("/genre/{id}")
     public ResponseEntity<Genre> getGenreByID(@PathVariable("id") Long id){
-        try{
-            Genre res = genreService.getGenreByID(id);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        Genre res = genreService.getGenreByID(id);
+        return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/addGenre")
+    @PostMapping("/add-genre")
     public ResponseEntity<Genre> addGenre(@ModelAttribute Genre genre){
-        try{
-            Genre res = genreService.addGenre(genre);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        if(genreService.findByName(genre.getName()) != null){
+            throw new MyException(HttpStatus.BAD_REQUEST, "Genre already exists");
         }
+        Genre res = genreService.addGenre(genre);
+        return ResponseEntity.ok(res);
     }
 
     @PutMapping("/modifyGenre/{id}")
     public ResponseEntity<Genre> modifyGenre(@PathVariable("id") Long id, @ModelAttribute Genre genre){
-        try{
-            Genre curGenre = genreService.getGenreByID(id);
-            if(curGenre == null){
-                return ResponseEntity.status(404).build();
-            }
-            Genre tmp = genreService.modifyGenre(curGenre, genre);
-            return ResponseEntity.status(200).body(tmp);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Genre curGenre = genreService.getGenreByID(id);
+        if(curGenre == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Genre not found");
         }
+        Genre tmp = genreService.modifyGenre(curGenre, genre);
+        return ResponseEntity.ok(tmp);
     }
 
     @DeleteMapping("/deleteGenre/{id}")
     public ResponseEntity<Genre> deleteGenre(@PathVariable("id") Long id){
-        try{
-            Genre curGenre = genreService.getGenreByID(id);
-            if(curGenre == null){
-                return ResponseEntity.status(404).build();
-            }
-            genreService.deleteGenre(id);
-            return ResponseEntity.status(200).body(curGenre);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Genre curGenre = genreService.getGenreByID(id);
+        if(curGenre == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Genre not found");
         }
+        genreService.deleteGenre(id);
+        return ResponseEntity.status(200).body(curGenre);
     }
 }

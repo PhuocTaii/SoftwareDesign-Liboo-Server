@@ -1,5 +1,6 @@
 package com.btv.app.features.reservation.services;
 
+import com.btv.app.exception.MyException;
 import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.author.model.Author;
 import com.btv.app.features.book.model.Book;
@@ -8,10 +9,12 @@ import com.btv.app.features.reservation.model.Reservation;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,136 +25,132 @@ public class ReservationController {
     private final UserService userService;
     private final AuthenticationService auth;
 
+    @AllArgsConstructor
+    private static class reservationResponse {
+        public Reservation reservation;
+        public String message;
+    }
+
     @GetMapping("/librarian/all-reservations")
     public ResponseEntity<List<Reservation>> getAllReservations(){
-        try {
-            List<Reservation> res = reservationService.getAllReservations();
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        List<Reservation> res = reservationService.getAllReservations();
+        if(res == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "No reservation found");
+        return ResponseEntity.ok(res);
     }
 
     //GET all reservations of a user
     @GetMapping("/reservations/reservations/{id}")
     public ResponseEntity<List<Reservation>> getUserReservations(@PathVariable("id") Long userId){
-        try {
-            User user = userService.getUserByID(userId);
-            if(user == null){
-                return ResponseEntity.status(404).build();
-            }
-            List<Reservation> res = reservationService.getAllReservationsOfUser(userId);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        User user = userService.getUserByID(userId);
+        if(user == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "User not found");
         }
+        List<Reservation> res = reservationService.getAllReservationsOfUser(userId);
+        return ResponseEntity.ok(res);
     }
 
     //GET reservation by ID
     @GetMapping("/librarian/reservations/{id}")
     public ResponseEntity<Reservation> getReservationByID(@PathVariable("id") Long id){
-        try{
-            Reservation res = reservationService.getReservationByID(id);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        Reservation res = reservationService.getReservationByID(id);
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/user/add-reservation")
-    public ResponseEntity<Reservation> addReservation(@ModelAttribute Reservation reservation) {
-        try{
-            User user = auth.getCurrentUser();
-            List<Book> books = reservation.getBooks();
+    public ResponseEntity<reservationResponse> addReservation(@ModelAttribute Reservation reservation) {
+        List<String> announcements = new ArrayList<>();
 
-            if(user == null){
-                return ResponseEntity.status(404).build();
-            }
+        User user = auth.getCurrentUser();
+        List<Book> books = reservation.getBooks();
 
-            if(user.getAvailableBorrow() == 0){
-                System.out.println("User is not allowed to borrow more books");
-                return ResponseEntity.status(400).build();
-            }
+        String announcement = "";
 
-            Membership membership = user.getMembership();
-
-            //Check booklist
-            if(reservation.getBooks().size() > membership.getReserve()){
-                System.out.println("User is not allowed to reserve more than " + membership.getReserve() + " books");
-                return ResponseEntity.status(400).build();
-            }
-
-            //Check reservation pickup date
-            if(reservation.getPickupDate().isBefore(LocalDate.now())){
-                System.out.println("Pickup date must be after today");
-                return ResponseEntity.status(400).build();
-            }
-
-            if(reservation.getPickupDate().isAfter(LocalDate.now().plusDays(3))){
-                System.out.println("Pickup date must be within 3 days");
-                return ResponseEntity.status(400).build();
-            }
-
-            //Check reservations
-            List<Reservation> userReservations = reservationService.getAllReservationsOfUser(user.getId());
-            List<Reservation> tmp = userReservations.stream().filter(res -> res.getPickupDate().isAfter(LocalDate.now())).toList();
-            Integer cnt = 0;
-            Boolean flag = false;
-            for(Reservation res:tmp){
-                cnt += res.getBooks().size();
-                for(Book b : books){
-                    if(res.getBooks().contains(b)){
-                        System.out.println(b.getName() + " is already reserved");
-                        flag = true;
-                    }
-                }
-            }
-            if(flag){
-                return ResponseEntity.status(400).build();
-            }
-            if(cnt.equals(membership.getMaxBook())){
-                System.out.println("User is not allowed to reserve more than " + membership.getReserve() + " books");
-                return ResponseEntity.status(400).build();
-            }
-
-            //Check if book is available
-            for(Book b:books){
-                if(b.getQuantity() == 1){
-                    System.out.println(b.getName() + " is not available");
-                    books.remove(b);
-                }
-            }
-            reservation = reservationService.modifyReservationBooks(reservation, books);
-
-
-
-            Reservation res = reservationService.addReservation(reservation);
-            user.setAvailableBorrow(user.getAvailableBorrow() - books.size());
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        if(user == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "User not found");
         }
+
+        if(user.getAvailableBorrow() == 0){
+            throw new MyException(HttpStatus.BAD_REQUEST, "User is not allowed to borrow more books");
+        }
+
+        Membership membership = user.getMembership();
+
+        //Check booklist
+        if(reservation.getBooks().size() > membership.getReserve()){
+            throw new MyException(HttpStatus.BAD_REQUEST, "User is not allowed to reserve more than " + membership.getReserve() + " books");
+        }
+
+        //Check reservation pickup date
+        if(reservation.getPickupDate().isBefore(LocalDate.now())){
+            throw new MyException(HttpStatus.BAD_REQUEST, "Pickup date must be after today");
+        }
+
+        if(reservation.getPickupDate().isAfter(LocalDate.now().plusDays(3))){
+            throw new MyException(HttpStatus.BAD_REQUEST, "Pickup date must be within 3 days");
+        }
+
+        //Check reservations
+        List<Reservation> userReservations = reservationService.getAllReservationsOfUser(user.getId());
+        List<Reservation> tmp = userReservations.stream().filter(res -> res.getPickupDate().isAfter(LocalDate.now())).toList();
+        Integer cnt = 0;
+        Boolean flag = false;
+        for(Reservation res:tmp){
+            cnt += res.getBooks().size();
+            for(Book b : books){
+                if(res.getBooks().contains(b)){
+                    announcements.add(b.getName() + " ");
+                    flag = true;
+                }
+            }
+        }
+        if(flag){
+            String message = "User has already reserved these books : " + announcements;
+            throw new MyException(HttpStatus.BAD_REQUEST, message);
+        }
+        if(cnt.equals(membership.getMaxBook())){
+            String message = "User is not allowed to reserve more than " + membership.getReserve() + " books";
+            throw new MyException(HttpStatus.BAD_REQUEST, message);
+        }
+
+        //Check if book is available
+        for(Book b:books){
+            if(b.getQuantity() == 1){
+                announcements.add(b.getName() + " ");
+                books.remove(b);
+            }
+        }
+        reservation = reservationService.modifyReservationBooks(reservation, books);
+
+        if(announcements.size() > 0){
+            announcement = "These books are not available : " + announcements;
+        } else{
+            announcement = "Success!";
+        }
+
+        Reservation reserve = reservationService.addReservation(reservation);
+
+        reservationResponse res = new reservationResponse(reserve, announcement);
+
+        user.setAvailableBorrow(user.getAvailableBorrow() - books.size());
+
+        return ResponseEntity.ok(res);
     }
 
     //UPDATE reservation status
     @PutMapping("/librarian/update-reservation/{reservationId}")
     public ResponseEntity<Reservation> modifyReservation(@PathVariable Long reservationId, @ModelAttribute Integer status){
-        try{
-            Reservation curRes = reservationService.getReservationByID(reservationId);
-            if(curRes == null){
-                return ResponseEntity.status(404).build();
-            }
-
-            if(status == 0){
-                System.out.println("Cannot set status to pending");
-                return ResponseEntity.status(400).build();
-            }
-            Reservation res = reservationService.modifyReservationStatus(curRes, status);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
+        Reservation curRes = reservationService.getReservationByID(reservationId);
+        if(curRes == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
+
+        if(status == 0){
+            throw new MyException(HttpStatus.BAD_REQUEST, "Cannot set status to pending");
+        }
+
+        Reservation res = reservationService.modifyReservationStatus(curRes, status);
+        return ResponseEntity.status(200).body(res);
     }
 
 //    @PutMapping("/reservations/modifyAuthor/{id}")
