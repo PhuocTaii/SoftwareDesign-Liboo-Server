@@ -2,9 +2,12 @@ package com.btv.app.features.genre.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "genre")
 
 public class Genre {

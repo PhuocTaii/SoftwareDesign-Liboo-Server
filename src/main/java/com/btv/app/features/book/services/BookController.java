@@ -1,10 +1,11 @@
 package com.btv.app.features.book.services;
 
 import com.btv.app.cloudinary.CloudinaryService;
+import com.btv.app.exception.MyException;
 import com.btv.app.features.book.model.Book;
-import com.btv.app.features.image.model.Image;
-import com.btv.app.features.image.services.ImageService;
+import com.btv.app.features.image.Image;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,78 +19,63 @@ import java.util.Map;
 public class BookController {
     private final BookService bookService;
     private final CloudinaryService cloudinaryService;
-    @GetMapping("/getAllBooks")
+    @GetMapping("/all-books")
     public ResponseEntity<List<Book>> getAllBooks(){
-        try {
-            List<Book> res = bookService.getAllBooks();
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        List<Book> res = bookService.getAllBooks();
+        if(res == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/getBookByID/{id}")
+    @GetMapping("/book/{id}")
     public ResponseEntity<Book> getBookByID(@PathVariable("id") Long id){
-        try{
-            Book res = bookService.getBookByID(id);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        Book res = bookService.getBookByID(id);
+        if(res == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
+        return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/admin/addBook")
+    @PostMapping("/admin/add-book")
     public ResponseEntity<Book> addBook(@ModelAttribute Book book){
-        try{
-            Book res = bookService.addBook(book);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            System.out.println(e);
-            return ResponseEntity.status(500).build();
-        }
+        if(bookService.getBookByISBN(book.getISBN()) != null)
+            throw new MyException(HttpStatus.CONFLICT, "This book is existed");
+
+        Book res = bookService.addBook(book);
+        return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/admin/modifyBook/{id}")
+    @PutMapping("/admin/modify-book/{id}")
     public ResponseEntity<Book> modifyBook(@PathVariable("id") Long id, @ModelAttribute Book book){
-        try{
-            Book curBook = bookService.getBookByID(id);
-            if(curBook == null){
-                return ResponseEntity.status(404).build();
-            }
-            Book tmp = bookService.modifyBook(curBook, book);
-            return ResponseEntity.status(200).body(tmp);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Book curBook = bookService.getBookByID(id);
+        if(curBook == null){
+            return ResponseEntity.status(404).build();
         }
+        Book tmp = bookService.modifyBook(curBook, book);
+        return ResponseEntity.ok(tmp);
     }
 
-    @DeleteMapping("/admin/deleteBook/{id}")
+    @DeleteMapping("/admin/delete-book/{id}")
     public ResponseEntity<Book> deleteBook(@PathVariable("id") Long id){
-        try{
             Book curBook = bookService.getBookByID(id);
-            if(curBook == null){
-                return ResponseEntity.status(404).build();
-            }
-            bookService.deleteBook(id);
-            return ResponseEntity.status(200).body(curBook);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        if(curBook == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
         }
+        bookService.deleteBook(id);
+        return ResponseEntity.ok(curBook);
     }
 
-    @PutMapping("/admin/addBookImage/{id}")
+    @PutMapping("/admin/add-book-image/{id}")
     public ResponseEntity<Book> uploadBookImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile file){
-        try{
-            Book curBook = bookService.getBookByID(id);
-            if(curBook == null){
-                return ResponseEntity.status(404).build();
-            }
-            Map data = cloudinaryService.upload(file);
-            Image image = new Image(data.get("public_id").toString(), data.get("secure_url").toString());
-            Book res = bookService.uploadImage(curBook, image);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Book curBook = bookService.getBookByID(id);
+        if(curBook == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
         }
+        Map data = cloudinaryService.upload(file);
+        if(data == null)
+            throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload image failed");
+        Image image = new Image(data.get("public_id").toString(), data.get("secure_url").toString());
+
+        Book res = bookService.uploadImage(curBook, image);
+        return ResponseEntity.ok(res);
     }
 }

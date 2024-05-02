@@ -1,9 +1,8 @@
 package com.btv.app.features.book.services;
 
 import com.btv.app.features.book.model.Book;
-import com.btv.app.features.image.model.Image;
+import com.btv.app.features.image.Image;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -88,5 +87,9 @@ public class BookService {
     public Book decreaseBookAmount(Book book){
         book.setQuantity(book.getQuantity() - 1);
         return bookRepository.save(book);
+    }
+
+    public Book getBookByISBN(String ISBN){
+        return bookRepository.findByISBN(ISBN);
     }
 }

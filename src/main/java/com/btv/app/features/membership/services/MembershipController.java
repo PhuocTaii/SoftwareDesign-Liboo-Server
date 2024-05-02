@@ -1,8 +1,10 @@
 package com.btv.app.features.membership.services;
 
+import com.btv.app.exception.MyException;
 import com.btv.app.features.membership.model.Membership;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,61 +15,45 @@ import java.util.List;
 @AllArgsConstructor
 public class MembershipController {
     private final MembershipService membershipService;
-    @GetMapping("/getAllMemberships")
+    @GetMapping("/all-memberships")
     public ResponseEntity<List<Membership>> getAllMemberships(){
-        try {
-            List<Membership> res =  membershipService.getAllMemberships();
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        List<Membership> res =  membershipService.getAllMemberships();
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/getMembershipByID/{id}")
+    @GetMapping("/membership/{id}")
     public ResponseEntity<Membership> getMembershipByID(@PathVariable("id") Long id){
-        try{
-            Membership res = membershipService.getMembershipByID(id);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        Membership res = membershipService.getMembershipByID(id);
+        return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/addMembership")
+    @PostMapping("/add-membership")
     public ResponseEntity<Membership> addMembership(@ModelAttribute Membership membership) {
-        try{
-            Membership res = membershipService.addMembership(membership);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        if(membershipService.getMembershipByType(membership.getType()) != null) {
+            throw new MyException(HttpStatus.CONFLICT, "Membership already exists");
         }
+
+        Membership res = membershipService.addMembership(membership);
+        return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/modifyMembership/{id}")
+    @PutMapping("/modify-membership/{id}")
     public ResponseEntity<Membership> modifyMembership(@PathVariable("id") Long id, Membership membership) {
-        try{
-            Membership curMem = membershipService.getMembershipByID(id);
-            if(curMem == null){
-                return ResponseEntity.status(404).build();
-            }
-            Membership res = membershipService.modifyMembership(curMem, membership);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Membership curMem = membershipService.getMembershipByID(id);
+        if(curMem == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Membership not found");
         }
+        Membership res = membershipService.modifyMembership(curMem, membership);
+        return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/deleteMembership/{id}")
+    @DeleteMapping("/delete-membership/{id}")
     public ResponseEntity<Membership> deleteMembership(@PathVariable("id") Long id) {
-        try{
-            Membership curMem = membershipService.getMembershipByID(id);
-            if(curMem == null){
-                return ResponseEntity.status(404).build();
-            }
-            membershipService.deleteMembership(id);
-            return ResponseEntity.status(200).body(curMem);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Membership curMem = membershipService.getMembershipByID(id);
+        if(curMem == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Membership not found");
         }
+        membershipService.deleteMembership(id);
+        return ResponseEntity.ok(curMem);
     }
 }

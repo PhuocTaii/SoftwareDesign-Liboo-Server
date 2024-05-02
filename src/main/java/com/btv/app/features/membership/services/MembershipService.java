@@ -51,4 +51,8 @@ public class MembershipService {
     public void deleteMembership(Long id){
         membershipRepository.deleteById(id);
     }
+
+    public Membership getMembershipByType(String type){
+        return membershipRepository.findByType(type);
+    }
 }

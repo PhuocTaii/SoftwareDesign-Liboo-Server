@@ -1,5 +1,5 @@
 package com.btv.app.features.user.services;
-import com.btv.app.features.image.model.Image;
+import com.btv.app.features.image.Image;
 import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
@@ -73,5 +73,14 @@ public class UserService {
         user.setMembership(membership);
         user.setAvailableBorrow(membership.getMaxBook());
         return userRepository.save(user);
+    }
+
+    public User getUserByIdentifier(String identifier){
+        return userRepository.findByIdentifier(identifier);
+    }
+
+    public User getUserByEmail(String email){
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        return optionalUser.orElse(null);
     }
 }

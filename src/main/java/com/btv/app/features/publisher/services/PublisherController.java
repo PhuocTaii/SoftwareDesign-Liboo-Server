@@ -1,7 +1,9 @@
 package com.btv.app.features.publisher.services;
 
+import com.btv.app.exception.MyException;
 import com.btv.app.features.publisher.model.Publisher;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,61 +14,44 @@ import java.util.List;
 @AllArgsConstructor
 public class PublisherController {
     private final PublisherService publisherService;
-    @GetMapping("/getAllPublishers")
+    @GetMapping("/all-publishers")
     public ResponseEntity<List<Publisher>> getAllPublishers(){
-        try {
-            List<Publisher> res = publisherService.getAllPublishers();
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+        List<Publisher> res = publisherService.getAllPublishers();
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/getPublisherByID/{id}")
+    @GetMapping("/publisher/{id}")
     public ResponseEntity<Publisher> getPublisherByID(@PathVariable("id") Long id){
-        try{
-            Publisher res = publisherService.getPublisherByID(id);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        Publisher res = publisherService.getPublisherByID(id);
+        return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/addPublisher")
+    @PostMapping("/add-publisher")
     public ResponseEntity<Publisher> addPublisher(@ModelAttribute Publisher publisher) {
-        try{
-            Publisher res = publisherService.addPublisher(publisher);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        if(publisherService.getPublicByName(publisher.getName()) != null) {
+            throw new MyException(HttpStatus.CONFLICT, "Publisher already exists");
         }
+        Publisher res = publisherService.addPublisher(publisher);
+        return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/modifyPublisher/{id}")
+    @PutMapping("/modify-publisher/{id}")
     public ResponseEntity<Publisher> modifyPublisher(@PathVariable("id") Long id, @ModelAttribute Publisher publisher) {
-        try{
-            Publisher curPub = publisherService.getPublisherByID(id);
-            if(curPub == null){
-                return ResponseEntity.status(404).build();
-            }
-            Publisher res = publisherService.modifyPublisher(curPub, publisher);
-            return ResponseEntity.status(200).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Publisher curPub = publisherService.getPublisherByID(id);
+        if(curPub == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Publisher not found");
         }
+        Publisher res = publisherService.modifyPublisher(curPub, publisher);
+        return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/deletePublisher/{id}")
+    @DeleteMapping("/delete-publisher/{id}")
     public ResponseEntity<Publisher> deletePublisher(@PathVariable("id") Long id){
-        try{
-            Publisher curPub = publisherService.getPublisherByID(id);
-            if(curPub == null){
-                return ResponseEntity.status(404).build();
-            }
-            publisherService.deletePublisher(id);
-            return ResponseEntity.status(200).body(curPub);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+        Publisher curPub = publisherService.getPublisherByID(id);
+        if(curPub == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Publisher not found");
         }
+        publisherService.deletePublisher(id);
+        return ResponseEntity.ok(curPub);
     }
 }

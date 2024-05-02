@@ -39,4 +39,8 @@ public class PublisherService {
     public void deletePublisher(Long id){
         publisherRepository.deleteById(id);
     }
+
+    public Publisher getPublicByName(String name){
+        return publisherRepository.findByName(name);
+    }
 }

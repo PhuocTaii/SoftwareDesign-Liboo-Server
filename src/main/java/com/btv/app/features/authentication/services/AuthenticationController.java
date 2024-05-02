@@ -1,5 +1,6 @@
 package com.btv.app.features.authentication.services;
 
+import com.btv.app.exception.MyException;
 import com.btv.app.features.authentication.model.AuthenticationRequest;
 import com.btv.app.features.authentication.model.AuthenticationResponse;
 import com.btv.app.features.authentication.model.RegisterRequest;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,23 +28,28 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final HttpSession session; // Inject HttpSession vào bean này
+    private final UserService userService;
 
     @PostMapping("/signup")
     public ResponseEntity<AuthenticationResponse> signup(@RequestBody RegisterRequest request){
-        try{
-            return ResponseEntity.ok(authenticationService.registerAccount(request));
-        } catch (Exception e){
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        if(userService.getUserByEmail(request.getEmail()) != null)
+            throw new MyException(HttpStatus.CONFLICT, "This email is being used ");
+        else if(userService.getUserByIdentifier(request.getIdentifier()) != null)
+            throw new MyException(HttpStatus.CONFLICT, "This identifier is being used ");
+        return ResponseEntity.ok(authenticationService.registerAccount(request));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request){
-        if(authenticationService.login(request) == null)
-            return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(authenticationService.login(request));
+    @PostMapping("user/login")
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) throws Exception {
+        if(userService.getUserByEmail(request.getEmail()) == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "This email is not registered");
+
+        AuthenticationResponse response = authenticationService.userLogin(request);
+
+        if(response == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "You are not authorized to access this page");
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refresh-token")
