@@ -1,11 +1,13 @@
 package com.btv.app.features.membership.services;
 
 import com.btv.app.features.membership.model.Membership;
+import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,5 +56,32 @@ public class MembershipService {
 
     public Membership getMembershipByType(String type){
         return membershipRepository.findByType(type);
+    }
+
+    public List<Integer> getMembershipAmount(List<User> users){
+        List<Integer> res = new ArrayList<>(4);
+        for(int i = 0; i < 4; i++){
+            res.add(0);
+        }
+        for(User u:users){
+            if(u.getMembership() != null){
+                switch (u.getMembership().getType()){
+                    case "Free":
+                        res.set(0, res.get(0) + 1);
+                        break;
+                    case "Regular":
+                        res.set(1, res.get(1) + 1);
+                        break;
+                    case "Premium":
+                        res.set(2, res.get(2) + 1);
+                        break;
+                    case "Student":
+                        res.set(3, res.get(3) + 1);
+                        break;
+                }
+            }
+        }
+
+        return res;
     }
 }

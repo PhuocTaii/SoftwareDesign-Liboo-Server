@@ -8,6 +8,7 @@ import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.membership.services.MembershipService;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,15 @@ public class UserController {
             throw new MyException(HttpStatus.NOT_FOUND, "No user found");
         return ResponseEntity.ok(res);
     }
+
+    @GetMapping("admin/all-readers")
+    public ResponseEntity<List<User>> getAllReader(){
+        List<User> res = userService.getAllReader();
+        if(res == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "No reader found");
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping("admin/user/{id}")
     public ResponseEntity<User> getUserByID(@PathVariable("id") Long id){
         User res = userService.getUserByID(id);
@@ -95,6 +105,12 @@ public class UserController {
             throw new MyException(HttpStatus.NOT_FOUND, "Membership not found");
         }
         User res = userService.modifyUserMembership(curUser, membership);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("admin/registration-by-year")
+    public ResponseEntity<List<Integer>> getUserAmountByYear(@Param("year") Integer year){
+        List<Integer> res = userService.getUserByYear(year);
         return ResponseEntity.ok(res);
     }
 }
