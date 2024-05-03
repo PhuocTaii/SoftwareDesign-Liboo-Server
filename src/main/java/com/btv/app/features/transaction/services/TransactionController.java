@@ -4,12 +4,14 @@ import com.btv.app.exception.MyException;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.book.services.BookService;
 import com.btv.app.features.membership.model.Membership;
+import com.btv.app.features.renewal.model.Renewal;
 import com.btv.app.features.transaction.models.Transaction;
 import com.btv.app.features.transaction.models.TransactionBook;
 import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,14 @@ public class TransactionController {
         public String message;
     }
 
+    @AllArgsConstructor
+    public static class TransactionListResponse {
+        public List<Transaction> transactions;
+        public int pageNumber;
+        public int totalPages;
+        public long totalItems;
+    }
+
     @GetMapping("/librarian/all-transactions")
     public ResponseEntity<List<Transaction>> getAllTransaction(){
         List<Transaction> res = transactionService.getAllTransaction();
@@ -41,7 +51,7 @@ public class TransactionController {
 
     //Search by userId
     @GetMapping("/transactions/{id}")
-    public ResponseEntity<List<Transaction>> getTransactionByUserId(@PathVariable("id") Long userId){
+    public ResponseEntity<TransactionListResponse> getTransactionByUserId(@PathVariable("id") Long userId, @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
         User user = userService.getUserByID(userId);
         if(user == null){
             throw new MyException(HttpStatus.NOT_FOUND, "User not found");
@@ -51,9 +61,8 @@ public class TransactionController {
             throw new MyException(HttpStatus.BAD_REQUEST, "User is not a member");
         }
 
-        List<Transaction> res = transactionService.getTransactionByUser(userId);
-        return ResponseEntity.ok(res);
-
+        Page<Transaction> res = transactionService.getTransactionByUser(userId, pageNumber);
+        return ResponseEntity.ok(new TransactionListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     @PostMapping("librarian/add-transaction")
@@ -81,7 +90,8 @@ public class TransactionController {
         Membership mem = user.getMembership();
         //Check if user is borrowing the same book
         for(Book b : books){
-            Boolean isBorrowed = transactionService.isBookBorrowed(user.getId(),b.getId());
+//            Boolean isBorrowed = transactionService.isBookBorrowed(user.getId(),b.getId());
+            Boolean isBorrowed = transactionBookService.isBookBorrowed(user.getId(),b.getId());
             if(isBorrowed){
                 throw new MyException(HttpStatus.BAD_REQUEST, b.getName() + " is already borrowed");
             }
