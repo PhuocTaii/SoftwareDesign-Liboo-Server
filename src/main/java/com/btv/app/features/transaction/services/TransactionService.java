@@ -5,6 +5,9 @@ import com.btv.app.features.transaction.models.TransactionBook;
 import com.btv.app.features.transaction.models.Transaction;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,6 +18,7 @@ import java.util.*;
 public class TransactionService {
     private final Integer RENEWAL_DAYS = 7;
     private final Integer LATE_FINE = 5000;
+    private final Integer PAGE_SIZE = 10;
 
     private final TransactionRepository transactionRepository;
     private final TransactionBookService transactionBookService;
@@ -23,8 +27,8 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
-    public List<Transaction> getTransactionByUser(Long userId){
-        return transactionRepository.findByUserId_Id(userId);
+    public Page<Transaction> getTransactionByUser(Long userId, int pageNumber){
+        return transactionRepository.findByUserId_Id(userId, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public Transaction getTransactionById(Long id){
@@ -38,18 +42,18 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public Boolean isBookBorrowed(Long userId, Long bookId){
-        List<Transaction> transaction = transactionRepository.findByUserId_Id(userId);
-        for(Transaction t : transaction){
-            List<TransactionBook> transactionBooks = t.getTransactionBooks();
-            for(TransactionBook tb : transactionBooks){
-                if(tb.getBook().getId().equals(bookId)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//    public Boolean isBookBorrowed(Long userId, Long bookId){
+//        List<Transaction> transaction = transactionRepository.findByUserId_Id(userId);
+//        for(Transaction t : transaction){
+//            List<TransactionBook> transactionBooks = t.getTransactionBooks();
+//            for(TransactionBook tb : transactionBooks){
+//                if(tb.getBook().getId().equals(bookId)){
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     public Transaction returnBook(Transaction transaction, TransactionBook transactionBook, Integer diff){
         int curFine = transaction.getFine();

@@ -30,7 +30,7 @@ public class RenewalController {
         public List<Renewal> renewals;
         public int pageNumber;
         public int totalPages;
-        public long totalElements;
+        public long totalItems;
     }
 
     @GetMapping("/librarian/renewals/{page-number}")
