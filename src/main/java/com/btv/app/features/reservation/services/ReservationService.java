@@ -21,7 +21,7 @@ public class ReservationService {
     public Reservation addReservation(Reservation reservation){
         return reservationRepository.save(reservation);
     }
-    public Reservation modifyReservationStatus(Reservation res, Integer status){
+    public Reservation modifyReservationStatus(Reservation res, Boolean status){
         res.setStatus(status);
         return reservationRepository.save(res);
     }

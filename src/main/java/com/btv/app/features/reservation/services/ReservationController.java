@@ -77,6 +77,8 @@ public class ReservationController {
         List<String> announcements = new ArrayList<>();
 
         User user = auth.getCurrentUser();
+        reservation.setUser(user);
+
         List<Book> books = reservation.getBooks();
 
         String announcement = "";
@@ -154,17 +156,17 @@ public class ReservationController {
 
     //UPDATE reservation status
     @PutMapping("/librarian/update-reservation/{reservationId}")
-    public ResponseEntity<Reservation> modifyReservation(@PathVariable Long reservationId, @ModelAttribute Integer status){
+    public ResponseEntity<Reservation> modifyReservation(@PathVariable Long reservationId, @ModelAttribute Boolean status){
         Reservation curRes = reservationService.getReservationByID(reservationId);
         if(curRes == null){
             throw new MyException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
 
-        if(status == 0){
-            throw new MyException(HttpStatus.BAD_REQUEST, "Cannot set status to pending");
+        if(!status){
+            throw new MyException(HttpStatus.BAD_REQUEST, "Cannot set status to NOT-PICKED-UP");
         }
 
-        Reservation res = reservationService.modifyReservationStatus(curRes, status);
+        Reservation res = reservationService.modifyReservationStatus(curRes, true);
         return ResponseEntity.status(200).body(res);
     }
 

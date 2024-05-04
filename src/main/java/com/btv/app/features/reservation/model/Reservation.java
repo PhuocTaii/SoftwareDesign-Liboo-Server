@@ -32,8 +32,8 @@ public class Reservation {
     @Column(name = "reserved_date", nullable = false)
     private LocalDate reservedDate;
 
-    @Column(name = "status", nullable = false)
-    private Integer status; //0: pending, 1: accepted, 2: rejected
+    @Column(name = "status", columnDefinition = "boolean default false")
+    private Boolean status; //0: not-picked-up, 1: picked-up
 
     @Column(name = "pickup_date", nullable = false)
     private LocalDate pickupDate;
@@ -41,6 +41,6 @@ public class Reservation {
     @PrePersist
     protected void onCreate() {
         this.reservedDate = LocalDate.now();
-        this.status = 0;
+        this.status = false;
     }
 }
