@@ -72,4 +72,20 @@ public class TransactionService {
         transaction.setFine(curFine);
         return transactionRepository.save(transaction);
     }
+
+    public List<Integer>getFineByYear(Integer year){
+        List<Integer> res = new ArrayList<>(12);
+        for(int i = 0; i < 12; i++){
+            res.add(0);
+        }
+        List<Transaction> transactions = transactionRepository.findAll();
+        for(Transaction t : transactions){
+            if(t.getBorrowedDate().getYear() == year){
+                int month = t.getBorrowedDate().getMonthValue();
+                int fine = t.getFine();
+                res.set(month - 1, res.get(month - 1) + fine);
+            }
+        }
+        return res;
+    }
 }

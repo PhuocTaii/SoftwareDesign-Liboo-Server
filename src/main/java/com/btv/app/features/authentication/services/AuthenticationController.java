@@ -40,14 +40,27 @@ public class AuthenticationController {
     }
 
     @PostMapping("user/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) throws Exception {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
         if(userService.getUserByEmail(request.getEmail()) == null)
             throw new MyException(HttpStatus.NOT_FOUND, "This email is not registered");
 
         AuthenticationResponse response = authenticationService.userLogin(request);
 
         if(response == null)
-            throw new MyException(HttpStatus.NOT_FOUND, "You are not authorized to access this page");
+            throw new MyException(HttpStatus.NOT_FOUND, "Login failed");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("admin/login")
+    public ResponseEntity<AuthenticationResponse> adminLogin(@RequestBody AuthenticationRequest request) {
+        if(userService.getUserByEmail(request.getEmail()) == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "This email is not registered");
+
+        AuthenticationResponse response = authenticationService.adminLogin(request);
+
+        if(response == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "Login failed");
 
         return ResponseEntity.ok(response);
     }

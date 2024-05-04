@@ -2,6 +2,8 @@ package com.btv.app.features.membership.services;
 
 import com.btv.app.exception.MyException;
 import com.btv.app.features.membership.model.Membership;
+import com.btv.app.features.user.models.User;
+import com.btv.app.features.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MembershipController {
     private final MembershipService membershipService;
+    private final UserService userService;
     @GetMapping("/all-memberships")
     public ResponseEntity<List<Membership>> getAllMemberships(){
         List<Membership> res =  membershipService.getAllMemberships();
@@ -55,5 +58,12 @@ public class MembershipController {
         }
         membershipService.deleteMembership(id);
         return ResponseEntity.ok(curMem);
+    }
+
+    @GetMapping("/membership-amount")
+    public ResponseEntity<List<Integer>> getMembershipAmount() {
+        List<User> users = userService.getAllUsers();
+        List<Integer> res = membershipService.getMembershipAmount(users);
+        return ResponseEntity.ok(res);
     }
 }
