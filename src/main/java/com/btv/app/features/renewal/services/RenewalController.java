@@ -33,13 +33,13 @@ public class RenewalController {
         public long totalItems;
     }
 
-    @GetMapping("/librarian/renewals/{page-number}")
-    public ResponseEntity<RenewalListResponse> getRenewals(@PathVariable("page-number") int pageNumber){
+    @GetMapping("/librarian/renewals")
+    public ResponseEntity<RenewalListResponse> getRenewals(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
         Page<Renewal> res = renewalService.getAllRenewals(pageNumber);
         return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
-    @GetMapping("/user/renewals/{page-number}")
-    public ResponseEntity<RenewalListResponse> getRenewalsByUser(@PathVariable("page-number") int pageNumber){
+    @GetMapping("/user/renewals")
+    public ResponseEntity<RenewalListResponse> getRenewalsByUser(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
         User user = authenticationService.getCurrentUser();
         Page<Renewal> res = renewalService.getRenewalByUser(user, pageNumber);
         return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
