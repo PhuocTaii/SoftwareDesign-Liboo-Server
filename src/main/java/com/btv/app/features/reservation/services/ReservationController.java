@@ -170,31 +170,9 @@ public class ReservationController {
         return ResponseEntity.status(200).body(res);
     }
 
-//    @PutMapping("/reservations/modifyAuthor/{id}")
-//    public ResponseEntity<Reservation> modifyReservation(@PathVariable("id") Long id, @ModelAttribute Reservation reservation){
-//        try{
-//            Reservation curReser = reservationService.getReservationByID(id);
-//            if(curReser == null){
-//                return ResponseEntity.status(404).build();
-//            }
-//            Reservation res = reservationService.modifyReservation(curReser, reservation);
-//            return ResponseEntity.status(200).body(res);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
-//
-//    @DeleteMapping("/reservations/deleteReservation/{id}")
-//    public ResponseEntity<Reservation> deleteReservation(@PathVariable("id") Long id){
-//        try{
-//            Reservation curRes = reservationService.getReservationByID(id);
-//            if(curRes == null){
-//                return ResponseEntity.status(404).build();
-//            }
-//            reservationService.deleteReservation(id);
-//            return ResponseEntity.status(200).body(curRes);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
+    @GetMapping("/librarian/pending-reservations")
+    public ResponseEntity <List<Reservation>> getPendingReservations(){
+        List<Reservation> res = reservationService.pendingReservations();
+        return ResponseEntity.ok(res);
+    }
 }

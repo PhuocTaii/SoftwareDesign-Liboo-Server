@@ -65,6 +65,20 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("librarian/login")
+    public ResponseEntity<AuthenticationResponse> librarianLogin(@RequestBody AuthenticationRequest request) {
+        if(userService.getUserByEmail(request.getEmail()) == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "This email is not registered");
+
+        AuthenticationResponse response = authenticationService.librarianLogin(request);
+
+        if(response == null)
+            throw new MyException(HttpStatus.NOT_FOUND, "Login  failed");
+
+        return ResponseEntity.ok(response);
+    }
+
+
     @PostMapping("/refresh-token")
     public void refreshToken(
             HttpServletRequest request,

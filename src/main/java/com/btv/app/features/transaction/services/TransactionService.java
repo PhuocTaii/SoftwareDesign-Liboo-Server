@@ -21,7 +21,6 @@ public class TransactionService {
     private final Integer PAGE_SIZE = 10;
 
     private final TransactionRepository transactionRepository;
-    private final TransactionBookService transactionBookService;
     private final TransactionBookRepository transactionBookRepository;
     public List<Transaction> getAllTransaction(){
         return transactionRepository.findAll();
