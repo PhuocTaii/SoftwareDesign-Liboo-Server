@@ -1,16 +1,15 @@
 package com.btv.app.features.reservation.services;
 
-import com.btv.app.features.author.model.Author;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.reservation.model.Reservation;
-import com.btv.app.features.user.models.User;
-import com.btv.app.features.user.services.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +17,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final Integer PAGE_SIZE = 10;
 
     public Reservation addReservation(Reservation reservation){
         return reservationRepository.save(reservation);
@@ -36,8 +36,12 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public List<Reservation> getAllReservationsOfUser(Long userId){
-        return reservationRepository.findByUserId_Id(userId);
+    public Page<Reservation> getReservationsOfUser(Long userId, int pageNumber){
+        return reservationRepository.findByUser_Id(userId, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public List<Reservation> getActiveReservationsByUser(Long userId, LocalDate date){
+        return reservationRepository.findByUser_IdAndPickupDateAfter(userId, date);
     }
 
     public Reservation getReservationByID(Long id){

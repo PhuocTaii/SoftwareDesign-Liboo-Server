@@ -152,7 +152,7 @@ public class AuthenticationService {
             return (User) principal;
         }
 
-        throw new IllegalArgumentException("User not found!");
+        throw new MyException(HttpStatus.NOT_FOUND, "User not found!");
     }
 
     public void refreshToken(
