@@ -57,7 +57,7 @@ public class ReservationService {
         List<Reservation> res = new ArrayList<>();
         List<Reservation> allRes = reservationRepository.findAll();
         for (Reservation r : allRes){
-            if(r.getStatus() == 0){
+            if(!r.getStatus()){
                 res.add(r);
             }
         }

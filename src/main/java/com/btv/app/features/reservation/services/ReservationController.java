@@ -27,7 +27,7 @@ public class ReservationController {
 
     @AllArgsConstructor
     public static class ReservationListResponse {
-        public List<Reservation> transactions;
+        public List<Reservation> reservations;
         public int pageNumber;
         public int totalPages;
         public long totalItems;
