@@ -1,6 +1,7 @@
 package com.btv.app.features.transaction.services;
 
 import com.btv.app.exception.MyException;
+import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.book.services.BookService;
 import com.btv.app.features.membership.model.Membership;
@@ -29,6 +30,7 @@ public class TransactionController {
     private final TransactionBookService transactionBookService;
     private final BookService bookService;
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @AllArgsConstructor
     public static class TransactionResponse {
@@ -51,7 +53,7 @@ public class TransactionController {
     }
 
     //Search by userId
-    @GetMapping("/transactions/{id}")
+    @GetMapping("/librarian/transactions/{id}")
     public ResponseEntity<TransactionListResponse> getTransactionByUserId(@PathVariable("id") Long userId, @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
         User user = userService.getUserByID(userId);
         if(user == null){
@@ -63,6 +65,14 @@ public class TransactionController {
         }
 
         Page<Transaction> res = transactionService.getTransactionByUser(userId, pageNumber);
+        return ResponseEntity.ok(new TransactionListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+    }
+
+    @GetMapping("/user/transactions")
+    public ResponseEntity<TransactionListResponse> getTransactionsByCurrentUser(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
+        User user = authenticationService.getCurrentUser();
+
+        Page<Transaction> res = transactionService.getTransactionByUser(user.getId(), pageNumber);
         return ResponseEntity.ok(new TransactionListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
@@ -165,6 +175,12 @@ public class TransactionController {
     @GetMapping("admin/fine-by-year")
     public ResponseEntity<List<Integer>> getFineByYear(@Param("year") Integer year){
         List<Integer> res = transactionService.getFineByYear(year);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("librarian/borrowing-books")
+    public ResponseEntity<List<TransactionBook>> getBorrowingBooks(){
+        List<TransactionBook> res = transactionBookService.getBorrowingBooks();
         return ResponseEntity.ok(res);
     }
 }

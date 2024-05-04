@@ -117,6 +117,34 @@ public class AuthenticationService {
                 .build();
     }
 
+    public AuthenticationResponse librarianLogin(AuthenticationRequest request){
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e){
+            throw new MyException(HttpStatus.NOT_FOUND, "Wrong password");
+        }
+
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow();
+
+        if(user.getRole() != Role.LIBRARIAN){
+            return null;
+        }
+
+        var jwt = jwtProvider.generateToken(user);
+        var refreshJwt = jwtProvider.generateRefreshToken(user);
+        return AuthenticationResponse.builder()
+                .accessToken(jwt)
+                .user(user)
+                .refreshToken(refreshJwt)
+                .build();
+    }
+
     public User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -124,7 +152,7 @@ public class AuthenticationService {
             return (User) principal;
         }
 
-        throw new IllegalArgumentException("User not found!");
+        throw new MyException(HttpStatus.NOT_FOUND, "User not found!");
     }
 
     public void refreshToken(

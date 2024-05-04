@@ -2,13 +2,13 @@ package com.btv.app.features.reservation.services;
 
 import com.btv.app.exception.MyException;
 import com.btv.app.features.authentication.services.AuthenticationService;
-import com.btv.app.features.author.model.Author;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.reservation.model.Reservation;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,15 @@ public class ReservationController {
     private final AuthenticationService auth;
 
     @AllArgsConstructor
-    private static class reservationResponse {
+    public static class ReservationListResponse {
+        public List<Reservation> transactions;
+        public int pageNumber;
+        public int totalPages;
+        public long totalItems;
+    }
+
+    @AllArgsConstructor
+    private static class ReservationResponse {
         public Reservation reservation;
         public String message;
     }
@@ -40,14 +48,21 @@ public class ReservationController {
     }
 
     //GET all reservations of a user
-    @GetMapping("/reservations/reservations/{id}")
-    public ResponseEntity<List<Reservation>> getUserReservations(@PathVariable("id") Long userId){
+    @GetMapping("/librarian/reservations/user/{id}")
+    public ResponseEntity<ReservationListResponse> getUserReservations(@PathVariable("id") Long userId, @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
         User user = userService.getUserByID(userId);
         if(user == null){
             throw new MyException(HttpStatus.NOT_FOUND, "User not found");
         }
-        List<Reservation> res = reservationService.getAllReservationsOfUser(userId);
-        return ResponseEntity.ok(res);
+        Page<Reservation> res = reservationService.getReservationsOfUser(userId, pageNumber);
+        return ResponseEntity.ok(new ReservationController.ReservationListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+    }
+
+    @GetMapping("/user/reservations")
+    public ResponseEntity<ReservationListResponse> getReservationsByCurrentUser(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
+        User user = auth.getCurrentUser();
+        Page<Reservation> res = reservationService.getReservationsOfUser(user.getId(), pageNumber);
+        return ResponseEntity.ok(new ReservationController.ReservationListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     //GET reservation by ID
@@ -58,7 +73,7 @@ public class ReservationController {
     }
 
     @PostMapping("/user/add-reservation")
-    public ResponseEntity<reservationResponse> addReservation(@ModelAttribute Reservation reservation) {
+    public ResponseEntity<ReservationResponse> addReservation(@ModelAttribute Reservation reservation) {
         List<String> announcements = new ArrayList<>();
 
         User user = auth.getCurrentUser();
@@ -91,11 +106,11 @@ public class ReservationController {
         }
 
         //Check reservations
-        List<Reservation> userReservations = reservationService.getAllReservationsOfUser(user.getId());
-        List<Reservation> tmp = userReservations.stream().filter(res -> res.getPickupDate().isAfter(LocalDate.now())).toList();
+        List<Reservation> userReservations = reservationService.getActiveReservationsByUser(user.getId(), LocalDate.now());
+//        List<Reservation> tmp = userReservations.stream().filter(res -> res.getPickupDate().isAfter(LocalDate.now())).toList();
         Integer cnt = 0;
         Boolean flag = false;
-        for(Reservation res:tmp){
+        for(Reservation res:userReservations){
             cnt += res.getBooks().size();
             for(Book b : books){
                 if(res.getBooks().contains(b)){
@@ -130,7 +145,7 @@ public class ReservationController {
 
         Reservation reserve = reservationService.addReservation(reservation);
 
-        reservationResponse res = new reservationResponse(reserve, announcement);
+        ReservationResponse res = new ReservationResponse(reserve, announcement);
 
         user.setAvailableBorrow(user.getAvailableBorrow() - books.size());
 
@@ -153,31 +168,9 @@ public class ReservationController {
         return ResponseEntity.status(200).body(res);
     }
 
-//    @PutMapping("/reservations/modifyAuthor/{id}")
-//    public ResponseEntity<Reservation> modifyReservation(@PathVariable("id") Long id, @ModelAttribute Reservation reservation){
-//        try{
-//            Reservation curReser = reservationService.getReservationByID(id);
-//            if(curReser == null){
-//                return ResponseEntity.status(404).build();
-//            }
-//            Reservation res = reservationService.modifyReservation(curReser, reservation);
-//            return ResponseEntity.status(200).body(res);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
-//
-//    @DeleteMapping("/reservations/deleteReservation/{id}")
-//    public ResponseEntity<Reservation> deleteReservation(@PathVariable("id") Long id){
-//        try{
-//            Reservation curRes = reservationService.getReservationByID(id);
-//            if(curRes == null){
-//                return ResponseEntity.status(404).build();
-//            }
-//            reservationService.deleteReservation(id);
-//            return ResponseEntity.status(200).body(curRes);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
+    @GetMapping("/librarian/pending-reservations")
+    public ResponseEntity <List<Reservation>> getPendingReservations(){
+        List<Reservation> res = reservationService.pendingReservations();
+        return ResponseEntity.ok(res);
+    }
 }
