@@ -12,4 +12,7 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     Page<Transaction> findByUserId_Id(Long id, Pageable pageable);
+
+    long countDistinctByTransactionBooks_ReturnDateNull();
+
 }

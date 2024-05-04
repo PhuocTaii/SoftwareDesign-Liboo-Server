@@ -39,12 +39,11 @@ public class SecurityConfiguration{
                 .authorizeHttpRequests(req ->
                         req
                             .requestMatchers("/api/authentication/**").permitAll()
-                            .requestMatchers("/api/getAllBooks").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
+                            .requestMatchers("/api/all-books").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/reservations/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
                             .requestMatchers("/api/transaction/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
-                            .requestMatchers("/api/getAllBooks").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
-                            .requestMatchers("/api/getBookByID/**").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
-                            .requestMatchers("/api/addUserImage/**").hasAnyAuthority(USER.name(), ADMIN.name())
+                            .requestMatchers("/api/book/**").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
+                            .requestMatchers("/api/add-user-image/**").hasAnyAuthority(USER.name(), ADMIN.name())
                             .requestMatchers("/api/admin/**").hasAuthority(ADMIN.name())
                             .requestMatchers("/api/user/**").hasAuthority(USER.name())
                             .requestMatchers("/api/librarian/**").hasAuthority(LIBRARIAN.name())
