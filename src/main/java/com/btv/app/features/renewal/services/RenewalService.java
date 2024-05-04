@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @AllArgsConstructor
 public class RenewalService {
@@ -22,6 +24,10 @@ public class RenewalService {
 
     public Page<Renewal> getRenewalByUser(User user, int pageNumber) {
         return renewalRepository.findByTransactionBook_Transaction_User(user, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public Page<Renewal> getRenewalByUserAndRequestDate(User user, LocalDate dateFrom, LocalDate dateTo, int pageNumber) {
+        return renewalRepository.findByTransactionBook_Transaction_UserAndRequestDateBetween(user, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public Renewal requestRenewal(Renewal renewal) {

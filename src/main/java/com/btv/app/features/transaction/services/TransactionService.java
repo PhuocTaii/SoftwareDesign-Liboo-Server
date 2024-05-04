@@ -30,6 +30,18 @@ public class TransactionService {
         return transactionRepository.findByUserId_Id(userId, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
+    public Page<Transaction> getTransactionByUserAndBorrowedDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return transactionRepository.findByUser_IdAndBorrowedDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public Page<Transaction> getTransactionByUserAndReturnDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return transactionRepository.findByUser_IdAndTransactionBooks_ReturnDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public Page<Transaction> getTransactionByUserAndDueDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return transactionRepository.findByUser_IdAndTransactionBooks_DueDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
     public Transaction getTransactionById(Long id){
         Optional<Transaction> optionalTransaction = transactionRepository.findById(id);
         return optionalTransaction.orElse(null);
@@ -40,19 +52,6 @@ public class TransactionService {
         transaction.setUser(user);
         return transactionRepository.save(transaction);
     }
-
-//    public Boolean isBookBorrowed(Long userId, Long bookId){
-//        List<Transaction> transaction = transactionRepository.findByUserId_Id(userId);
-//        for(Transaction t : transaction){
-//            List<TransactionBook> transactionBooks = t.getTransactionBooks();
-//            for(TransactionBook tb : transactionBooks){
-//                if(tb.getBook().getId().equals(bookId)){
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
 
     public Transaction returnBook(Transaction transaction, TransactionBook transactionBook, Integer diff){
         int curFine = transaction.getFine();

@@ -22,7 +22,7 @@ public class ReservationService {
     public Reservation addReservation(Reservation reservation){
         return reservationRepository.save(reservation);
     }
-    public Reservation modifyReservationStatus(Reservation res, Integer status){
+    public Reservation modifyReservationStatus(Reservation res, Boolean status){
         res.setStatus(status);
         return reservationRepository.save(res);
     }
@@ -57,7 +57,7 @@ public class ReservationService {
         List<Reservation> res = new ArrayList<>();
         List<Reservation> allRes = reservationRepository.findAll();
         for (Reservation r : allRes){
-            if(r.getStatus() == 0){
+            if(!r.getStatus()){
                 res.add(r);
             }
         }

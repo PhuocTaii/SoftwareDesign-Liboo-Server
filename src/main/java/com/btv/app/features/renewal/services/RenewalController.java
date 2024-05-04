@@ -8,6 +8,7 @@ import com.btv.app.features.transaction.services.TransactionBookService;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,13 +37,25 @@ public class RenewalController {
     @GetMapping("/librarian/renewals")
     public ResponseEntity<RenewalListResponse> getRenewals(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
         Page<Renewal> res = renewalService.getAllRenewals(pageNumber);
-        return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+        return ResponseEntity.ok(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
     @GetMapping("/user/renewals")
-    public ResponseEntity<RenewalListResponse> getRenewalsByUser(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
+    public ResponseEntity<RenewalListResponse> getRenewalsByUser(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
+    ){
+        System.out.println("dateFrom" + dateFrom);
+        System.out.println("dateTo" + dateTo);
+
         User user = authenticationService.getCurrentUser();
-        Page<Renewal> res = renewalService.getRenewalByUser(user, pageNumber);
-        return ResponseEntity.status(200).body(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+        Page<Renewal> res;
+
+        if(dateFrom == null || dateTo == null)
+            res = renewalService.getRenewalByUser(user, pageNumber);
+        else
+            res = renewalService.getRenewalByUserAndRequestDate(user, dateFrom, dateTo, pageNumber);
+        return ResponseEntity.ok(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     @PostMapping("/user/request-renewal")
@@ -72,6 +85,6 @@ public class RenewalController {
         transactionBookService.increaseRenewalCount(renewal.getTransactionBook());
         transactionBookService.extendDueDate(renewal.getTransactionBook());
 
-        return ResponseEntity.status(200).body(renewal);
+        return ResponseEntity.ok(renewal);
     }
 }
