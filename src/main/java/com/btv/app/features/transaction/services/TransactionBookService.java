@@ -58,4 +58,8 @@ public class TransactionBookService {
     public Boolean isBookBorrowed(Long userId, Long bookId){
         return transactionBookRepository.existsByTransaction_User_IdAndBook_IdAndReturnDateNotNull(userId, bookId);
     }
+
+    public List<TransactionBook> getBorrowingBooks(){
+        return transactionBookRepository.findByReturnDateNull();
+    }
 }

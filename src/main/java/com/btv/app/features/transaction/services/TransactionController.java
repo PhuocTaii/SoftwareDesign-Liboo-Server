@@ -167,4 +167,10 @@ public class TransactionController {
         List<Integer> res = transactionService.getFineByYear(year);
         return ResponseEntity.ok(res);
     }
+
+    @GetMapping("librarian/borrowing-books")
+    public ResponseEntity<List<TransactionBook>> getBorrowingBooks(){
+        List<TransactionBook> res = transactionBookService.getBorrowingBooks();
+        return ResponseEntity.ok(res);
+    }
 }

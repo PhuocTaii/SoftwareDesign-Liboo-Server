@@ -11,4 +11,7 @@ public interface TransactionBookRepository extends JpaRepository<TransactionBook
     List<TransactionBook> findByTransaction_User_IdAndBook_Id(Long userId, Long bookId);
 
     boolean existsByTransaction_User_IdAndBook_IdAndReturnDateNotNull(Long userId, Long bookId);
+
+    List<TransactionBook> findByReturnDateNull();
+
 }

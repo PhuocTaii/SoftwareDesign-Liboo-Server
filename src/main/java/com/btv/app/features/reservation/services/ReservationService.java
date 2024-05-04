@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,13 @@ public class ReservationService {
     }
 
     public List<Reservation> pendingReservations(){
-        return reservationRepository.findAll();
+        List<Reservation> res = new ArrayList<>();
+        List<Reservation> allRes = reservationRepository.findAll();
+        for (Reservation r : allRes){
+            if(r.getStatus() == 0){
+                res.add(r);
+            }
+        }
+        return res;
     }
 }
