@@ -4,6 +4,9 @@ import com.btv.app.features.book.model.Book;
 import com.btv.app.features.image.Image;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +15,10 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class BookService {
+    private final Integer PAGE_SIZE = 10;
     private final BookRepository bookRepository;
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public Page<Book> getAllBooks(int pageNumber) {
+        return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public Book getBookByID(Long id){
@@ -75,6 +79,9 @@ public class BookService {
     }
 
     public Book increaseBookBorrowed(Book book){
+
+
+
         book.setBorrowed(book.getBorrowed() + 1);
         return bookRepository.save(book);
     }
@@ -91,5 +98,9 @@ public class BookService {
 
     public Book getBookByISBN(String ISBN){
         return bookRepository.findByISBN(ISBN);
+    }
+
+    public List<Book> getBookByName(String name){
+        return bookRepository.findByNameContains(name);
     }
 }

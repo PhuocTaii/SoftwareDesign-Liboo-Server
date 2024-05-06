@@ -202,4 +202,16 @@ public class TransactionController {
         List<TransactionBook> res = transactionBookService.getBorrowingBooks();
         return ResponseEntity.ok(res);
     }
+
+    @GetMapping("librarian/total-active-borrowers")
+    public ResponseEntity<Long> getTotalActiveBorrowers(){
+        Long res = transactionService.getTotalActiveBorrowers();
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("librarian/book-borrowed-count")
+    public ResponseEntity<List<Integer>> getBookBorrowedCount(@Param("year") Integer year){
+        List<Integer> res = transactionService.getBookBorrowedCount(year);
+        return ResponseEntity.ok(res);
+    }
 }

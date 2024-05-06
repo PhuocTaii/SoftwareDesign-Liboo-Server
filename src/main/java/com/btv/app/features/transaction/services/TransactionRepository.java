@@ -18,4 +18,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Page<Transaction> findByUser_IdAndTransactionBooks_ReturnDateBetween(Long id, LocalDate returnDateStart, LocalDate returnDateEnd, Pageable pageable);
 
     Page<Transaction> findByUser_IdAndTransactionBooks_DueDateBetween(Long id, LocalDate dueDateStart, LocalDate dueDateEnd, Pageable pageable);
+
+    long countDistinctByTransactionBooks_ReturnDateNull();
+
 }
