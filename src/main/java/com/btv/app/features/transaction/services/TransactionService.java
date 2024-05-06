@@ -86,4 +86,23 @@ public class TransactionService {
         }
         return res;
     }
+
+    public Long getTotalActiveBorrowers(){
+        return transactionRepository.countDistinctByTransactionBooks_ReturnDateNull();
+    }
+
+    public List<Integer> getBookBorrowedCount(Integer year){
+        List<Integer> res = new ArrayList<>(12);
+        for(int i = 0; i < 12; i++){
+            res.add(0);
+        }
+        List<Transaction> transactions = transactionRepository.findAll();
+        for(Transaction t : transactions){
+            if(t.getBorrowedDate().getYear() == year){
+                int month = t.getBorrowedDate().getMonthValue();
+                res.set(month - 1, res.get(month - 1) + t.getTransactionBooks().size());
+            }
+        }
+        return res;
+    }
 }

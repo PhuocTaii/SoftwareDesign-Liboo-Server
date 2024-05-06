@@ -3,8 +3,10 @@ package com.btv.app.features.reservation.services;
 import com.btv.app.exception.MyException;
 import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.book.model.Book;
+import com.btv.app.features.book.services.BookService;
 import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.reservation.model.Reservation;
+import com.btv.app.features.reservation.model.ReservationRequest;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserService;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ import java.util.Objects;
 public class ReservationController {
     private final ReservationService reservationService;
     private final UserService userService;
+    private final BookService bookService;
     private final AuthenticationService auth;
 
     @AllArgsConstructor
@@ -94,14 +97,22 @@ public class ReservationController {
     }
 
     @PostMapping("/user/add-reservation")
-    public ResponseEntity<ReservationResponse> addReservation(@ModelAttribute Reservation reservation) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
         List<String> announcements = new ArrayList<>();
-
+        Reservation reservation = new Reservation();
         User user = auth.getCurrentUser();
         reservation.setUser(user);
+        reservation.setPickupDate(request.getPickupDate());
 
-        List<Book> books = reservation.getBooks();
-
+        List<Book> books = new ArrayList<>();
+        for(String i : request.getIsbn()){
+            Book book = bookService.getBookByISBN(i);
+            if(book == null){
+                throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
+            }
+            books.add(book);
+        }
+        reservation.setBooks(books);
         String announcement = "";
 
         if(user == null){
@@ -170,8 +181,7 @@ public class ReservationController {
 
         ReservationResponse res = new ReservationResponse(reserve, announcement);
 
-        user.setAvailableBorrow(user.getAvailableBorrow() - books.size());
-
+        userService.decreaseAvailableBorrow(user, books.size());
         return ResponseEntity.ok(res);
     }
 
@@ -194,6 +204,13 @@ public class ReservationController {
     @GetMapping("/librarian/pending-reservations")
     public ResponseEntity <List<Reservation>> getPendingReservations(){
         List<Reservation> res = reservationService.pendingReservations();
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/user/not-picked-up-reservations")
+    public ResponseEntity <List<Reservation>> getNotPickedUpReservations(){
+        User user = auth.getCurrentUser();
+        List<Reservation> res = reservationService.getNotPickedUpReservationsByUser(user.getId(), LocalDate.now());
         return ResponseEntity.ok(res);
     }
 }
