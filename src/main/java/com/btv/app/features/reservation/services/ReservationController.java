@@ -120,14 +120,14 @@ public class ReservationController {
         }
 
         if(user.getAvailableBorrow() == 0){
-            throw new MyException(HttpStatus.BAD_REQUEST, "User is not allowed to borrow more books");
+            throw new MyException(HttpStatus.BAD_REQUEST, "You are not allowed to borrow more books");
         }
 
         Membership membership = user.getMembership();
 
         //Check booklist
         if(reservation.getBooks().size() > membership.getReserve()){
-            throw new MyException(HttpStatus.BAD_REQUEST, "User is not allowed to reserve more than " + membership.getReserve() + " books");
+            throw new MyException(HttpStatus.BAD_REQUEST, "You are not allowed to reserve more than " + membership.getReserve() + " books");
         }
 
         //Check reservation pickup date
@@ -154,11 +154,11 @@ public class ReservationController {
             }
         }
         if(flag){
-            String message = "User has already reserved these books : " + announcements;
+            String message = "You have already reserved these books : " + announcements;
             throw new MyException(HttpStatus.BAD_REQUEST, message);
         }
         if(cnt.equals(membership.getMaxBook())){
-            String message = "User is not allowed to reserve more than " + membership.getReserve() + " books";
+            String message = "You are not allowed to reserve more than " + membership.getReserve() + " books";
             throw new MyException(HttpStatus.BAD_REQUEST, message);
         }
 

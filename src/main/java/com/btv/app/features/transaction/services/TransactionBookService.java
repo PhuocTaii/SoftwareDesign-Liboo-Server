@@ -6,8 +6,9 @@ import com.btv.app.features.transaction.models.TransactionBook;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -42,19 +43,6 @@ public class TransactionBookService {
     public TransactionBook getTransactionBookByTransactionAndBook(Long transactionId, Long bookId) {
         return transactionBookRepository.findByTransaction_IdAndBook_Id(transactionId, bookId);
     }
-
-//    public Boolean isBookBorrowed(Long userId, Long bookId){
-//        List<Transaction> transaction = transactionRepository.findByUserId_Id(userId);
-//        for(Transaction t : transaction){
-//            List<TransactionBook> transactionBooks = t.getTransactionBooks();
-//            for(TransactionBook tb : transactionBooks){
-//                if(tb.getBook().getId().equals(bookId)){
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
     public Boolean isBookBorrowed(Long userId, Long bookId){
         return transactionBookRepository.existsByTransaction_User_IdAndBook_IdAndReturnDateNotNull(userId, bookId);
     }
@@ -63,6 +51,8 @@ public class TransactionBookService {
         return transactionBookRepository.findByReturnDateNull();
     }
 
-
-
+    public TransactionBook getTransactionBookById(Long transactionBookId) {
+        Optional<TransactionBook> res = transactionBookRepository.findById(transactionBookId);
+        return res.orElse(null);
+    }
 }

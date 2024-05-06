@@ -80,10 +80,6 @@ public class TransactionController {
             @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
     )
     {
-        System.out.println("filterOption" + filterOption);
-        System.out.println("dateFrom" + dateFrom);
-        System.out.println("dateTo" + dateTo);
-
         User user = authenticationService.getCurrentUser();
         Page<Transaction> res;
         if(Objects.equals(filterOption, "") || dateFrom == null || dateTo == null)

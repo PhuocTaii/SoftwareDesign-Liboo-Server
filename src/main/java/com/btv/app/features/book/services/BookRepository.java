@@ -1,7 +1,6 @@
 package com.btv.app.features.book.services;
 
 import com.btv.app.features.book.model.Book;
-import com.btv.app.features.transaction.models.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +17,7 @@ public interface BookRepository extends JpaRepository<Book, Long>{
 
     Book findByISBN(String ISBN);
 
-    List<Book> findByNameContains(String name);
+    List<Book> findByNameContainsAllIgnoreCase(String name);
 
+    List<Book> findByISBNContainsAllIgnoreCase(String ISBN);
 }

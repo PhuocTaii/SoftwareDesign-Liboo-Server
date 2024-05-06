@@ -6,8 +6,10 @@ import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.image.Image;
 import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.membership.services.MembershipService;
+import com.btv.app.features.transaction.services.TransactionController;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api")
@@ -25,6 +28,15 @@ public class UserController {
     private final CloudinaryService cloudinaryService;
     private final MembershipService membershipService;
     private final AuthenticationService auth;
+
+    @AllArgsConstructor
+    public static class UserListResponse {
+        public List<User> users;
+        public int pageNumber;
+        public int totalPages;
+        public long totalItems;
+    }
+
     @GetMapping("admin/all-users")
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> res = userService.getAllUsers();
@@ -33,12 +45,19 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("admin/all-readers")
-    public ResponseEntity<List<User>> getAllReader(){
-        List<User> res = userService.getAllReader();
-        if(res == null)
-            throw new MyException(HttpStatus.NOT_FOUND, "No reader found");
-        return ResponseEntity.ok(res);
+    @GetMapping("/readers")
+    public ResponseEntity<UserListResponse> getReaders(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
+    ){
+        System.out.println("searchBy = " + searchBy);
+        System.out.println("query = " + query);
+        System.out.println("sortBy = " + sortBy);
+
+        Page<User> res = userService.getReaders(pageNumber, searchBy, query, sortBy);
+        return ResponseEntity.ok(new UserController.UserListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     @GetMapping("admin/user/{id}")

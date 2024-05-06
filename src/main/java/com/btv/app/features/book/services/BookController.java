@@ -7,13 +7,17 @@ import com.btv.app.features.image.Image;
 import com.btv.app.features.transaction.models.Transaction;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api")
@@ -92,9 +96,20 @@ public class BookController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/book/name")
-    public ResponseEntity<List<Book>> getBookByName(@RequestParam("name") String name){
-        List<Book> res = bookService.getBookByName(name);
+    @GetMapping("/books")
+    public ResponseEntity<List<Book>> searchBook(
+            @RequestParam(value = "name", required = false, defaultValue = "") String name,
+            @RequestParam(value = "isbn", required = false, defaultValue = "") String isbn
+    ){
+        System.out.println(name);
+        System.out.println(isbn);
+        List<Book> res;
+        if(!Objects.equals(name, "") && Objects.equals(isbn, ""))
+            res = bookService.getBookByName(name);
+        else if(!Objects.equals(isbn, "") && Objects.equals(name, ""))
+            res = bookService.getBooksContainIsbn(isbn);
+        else
+            res = new ArrayList<>();
         return ResponseEntity.ok(res);
     }
 }
