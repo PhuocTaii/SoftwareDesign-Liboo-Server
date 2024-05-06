@@ -13,7 +13,10 @@ import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping("api")
@@ -69,10 +73,29 @@ public class TransactionController {
     }
 
     @GetMapping("/user/transactions")
-    public ResponseEntity<TransactionListResponse> getTransactionsByCurrentUser(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
-        User user = authenticationService.getCurrentUser();
+    public ResponseEntity<TransactionListResponse> getTransactionsByCurrentUser(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "filter-by", required = false) String filterOption,
+            @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
+    )
+    {
+        System.out.println("filterOption" + filterOption);
+        System.out.println("dateFrom" + dateFrom);
+        System.out.println("dateTo" + dateTo);
 
-        Page<Transaction> res = transactionService.getTransactionByUser(user.getId(), pageNumber);
+        User user = authenticationService.getCurrentUser();
+        Page<Transaction> res;
+        if(Objects.equals(filterOption, "") || dateFrom == null || dateTo == null)
+            res = transactionService.getTransactionByUser(user.getId(), pageNumber);
+        else if(Objects.equals(filterOption, "borrow-date"))
+            res = transactionService.getTransactionByUserAndBorrowedDate(user.getId(), dateFrom, dateTo, pageNumber);
+        else if(Objects.equals(filterOption, "return-date"))
+            res = transactionService.getTransactionByUserAndReturnDate(user.getId(), dateFrom, dateTo, pageNumber);
+        else if(Objects.equals(filterOption, "due-date"))
+            res = transactionService.getTransactionByUserAndDueDate(user.getId(), dateFrom, dateTo, pageNumber);
+        else
+            res = transactionService.getTransactionByUser(user.getId(), pageNumber);
         return ResponseEntity.ok(new TransactionListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
