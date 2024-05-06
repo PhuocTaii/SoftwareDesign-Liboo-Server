@@ -38,7 +38,10 @@ public class SecurityConfiguration{
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
+                            .requestMatchers("/api/payment/**").permitAll()
+                            .requestMatchers("/vnpay-payment-return/**").permitAll()
                             .requestMatchers("/api/authentication/**").permitAll()
+                            .requestMatchers("/api/payment/").permitAll()
                             .requestMatchers("/api/getAllBooks").hasAnyAuthority(USER.name(), LIBRARIAN.name(), ADMIN.name())
                             .requestMatchers("/api/reservations/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
                             .requestMatchers("/api/transaction/**").hasAnyAuthority(USER.name(), LIBRARIAN.name())
