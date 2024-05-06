@@ -14,8 +14,7 @@ import java.util.Optional;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     Page<Reservation> findByUser_Id(Long id, Pageable pageable);
-
     List<Reservation> findByUser_IdAndPickupDateAfter(Long id, LocalDate pickupDate);
-
-
+    Page<Reservation> findByUser_IdAndReservedDateBetween(Long id, LocalDate reservedDateStart, LocalDate reservedDateEnd, Pageable pageable);
+    Page<Reservation> findByUser_IdAndPickupDateBetween(Long id, LocalDate pickupDateStart, LocalDate pickupDateEnd, Pageable pageable);
 }

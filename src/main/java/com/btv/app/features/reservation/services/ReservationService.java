@@ -40,6 +40,14 @@ public class ReservationService {
         return reservationRepository.findByUser_Id(userId, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
+    public Page<Reservation> getReservationsOfUserByReserveDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return reservationRepository.findByUser_IdAndReservedDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public Page<Reservation> getReservationsOfUserByPickupDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return reservationRepository.findByUser_IdAndPickupDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
     public List<Reservation> getActiveReservationsByUser(Long userId, LocalDate date){
         return reservationRepository.findByUser_IdAndPickupDateAfter(userId, date.minusDays(1));
     }
