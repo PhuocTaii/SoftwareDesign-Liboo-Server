@@ -4,6 +4,7 @@ import com.btv.app.exception.MyException;
 import com.btv.app.features.authentication.services.AuthenticationService;
 import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.renewal.model.Renewal;
+import com.btv.app.features.transaction.models.TransactionBook;
 import com.btv.app.features.transaction.services.TransactionBookService;
 import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api")
@@ -45,9 +48,6 @@ public class RenewalController {
             @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
             @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
     ){
-        System.out.println("dateFrom" + dateFrom);
-        System.out.println("dateTo" + dateTo);
-
         User user = authenticationService.getCurrentUser();
         Page<Renewal> res;
 
@@ -59,7 +59,12 @@ public class RenewalController {
     }
 
     @PostMapping("/user/request-renewal")
-    public ResponseEntity<Renewal> requestRenewal(@ModelAttribute Renewal renewal) {
+    public ResponseEntity<Renewal> requestRenewal(@RequestBody Map<String, Long> req) {
+        Long transactionBookId = req.get("transactionBook");
+        TransactionBook transactionBook = transactionBookService.getTransactionBookById(transactionBookId);
+        Renewal renewal = new Renewal();
+        renewal.setTransactionBook(transactionBook);
+
         // check if this transaction belong to current user
         if(!Objects.equals(authenticationService.getCurrentUser().getId(), renewal.getTransactionBook().getTransaction().getUser().getId())) {
             throw new MyException(HttpStatus.FORBIDDEN, "Not have right to renew this borrowing!");
