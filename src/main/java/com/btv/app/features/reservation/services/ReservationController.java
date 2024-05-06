@@ -9,6 +9,7 @@ import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
@@ -59,9 +61,28 @@ public class ReservationController {
     }
 
     @GetMapping("/user/reservations")
-    public ResponseEntity<ReservationListResponse> getReservationsByCurrentUser(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
+    public ResponseEntity<ReservationListResponse> getReservationsByCurrentUser(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "filter-by", required = false) String filterOption,
+            @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
+    ){
+        System.out.println("filterOption" + filterOption);
+        System.out.println("dateFrom" + dateFrom);
+        System.out.println("dateTo" + dateTo);
+
         User user = auth.getCurrentUser();
-        Page<Reservation> res = reservationService.getReservationsOfUser(user.getId(), pageNumber);
+        Page<Reservation> res;
+
+        if(Objects.equals(filterOption, "") || dateFrom == null || dateTo == null)
+            res = reservationService.getReservationsOfUser(user.getId(), pageNumber);
+        else if(Objects.equals(filterOption, "reserve-date"))
+            res = reservationService.getReservationsOfUserByReserveDate(user.getId(), dateFrom, dateTo, pageNumber);
+        else if(Objects.equals(filterOption, "pickup-date"))
+            res = reservationService.getReservationsOfUserByPickupDate(user.getId(), dateFrom, dateTo, pageNumber);
+        else
+            res = reservationService.getReservationsOfUser(user.getId(), pageNumber);
+
         return ResponseEntity.ok(new ReservationController.ReservationListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
