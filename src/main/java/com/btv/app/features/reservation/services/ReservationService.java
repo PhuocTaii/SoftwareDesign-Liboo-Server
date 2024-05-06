@@ -49,7 +49,7 @@ public class ReservationService {
     }
 
     public List<Reservation> getActiveReservationsByUser(Long userId, LocalDate date){
-        return reservationRepository.findByUser_IdAndPickupDateAfter(userId, date);
+        return reservationRepository.findByUser_IdAndPickupDateAfter(userId, date.minusDays(1));
     }
 
     public Reservation getReservationByID(Long id){
@@ -69,6 +69,11 @@ public class ReservationService {
                 res.add(r);
             }
         }
+        return res;
+    }
+
+    public List<Reservation> getNotPickedUpReservationsByUser(Long userId, LocalDate date){
+        List<Reservation> res = reservationRepository.findByUser_IdAndPickupDateAfter(userId, date);
         return res;
     }
 }

@@ -4,7 +4,9 @@ import com.btv.app.cloudinary.CloudinaryService;
 import com.btv.app.exception.MyException;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.image.Image;
+import com.btv.app.features.transaction.models.Transaction;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,19 +21,30 @@ import java.util.Map;
 public class BookController {
     private final BookService bookService;
     private final CloudinaryService cloudinaryService;
+
+    @AllArgsConstructor
+    public static class BookListResponse {
+        public List<Book> books;
+        public int pageNumber;
+        public int totalPages;
+        public long totalItems;
+    }
+
     @GetMapping("/all-books")
-    public ResponseEntity<List<Book>> getAllBooks(){
-        List<Book> res = bookService.getAllBooks();
-        if(res == null)
-            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
-        return ResponseEntity.ok(res);
+    public ResponseEntity<BookListResponse> getAllBooks(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
+        Page<Book> res = bookService.getAllBooks(pageNumber);
+        return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     @GetMapping("/book/{id}")
     public ResponseEntity<Book> getBookByID(@PathVariable("id") Long id){
         Book res = bookService.getBookByID(id);
-        if(res == null)
-            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/book/isbn/{isbn}")
+    public ResponseEntity<Book> getBookByISBN(@PathVariable("isbn") String ISBN){
+        Book res = bookService.getBookByISBN(ISBN);
         return ResponseEntity.ok(res);
     }
 
@@ -76,6 +89,12 @@ public class BookController {
         Image image = new Image(data.get("public_id").toString(), data.get("secure_url").toString());
 
         Book res = bookService.uploadImage(curBook, image);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/book/name")
+    public ResponseEntity<List<Book>> getBookByName(@RequestParam("name") String name){
+        List<Book> res = bookService.getBookByName(name);
         return ResponseEntity.ok(res);
     }
 }

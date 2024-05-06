@@ -84,4 +84,17 @@ public class MembershipService {
 
         return res;
     }
+
+    public Membership getMembershipByPrice(Integer price){
+        if(price == 0){
+            return getMembershipByType("Free");
+        } else if(price == 50000){
+            return getMembershipByType("Regular");
+        } else if(price == 75000){
+            return getMembershipByType("Premium");
+        } else if(price == 30000){
+            return getMembershipByType("Student");
+        }
+        return null;
+    }
 }

@@ -59,6 +59,9 @@ public class UserService {
         if(updateUser.getBirthDate() != null){
             curUser.setBirthDate(updateUser.getBirthDate());
         }
+        if(updateUser.getAvailableBorrow() != null){
+            curUser.setAvailableBorrow(updateUser.getAvailableBorrow());
+        }
 
         return userRepository.save(curUser);
     }
