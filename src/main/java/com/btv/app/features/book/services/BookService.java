@@ -101,6 +101,10 @@ public class BookService {
     }
 
     public List<Book> getBookByName(String name){
-        return bookRepository.findByNameContains(name);
+        return bookRepository.findByNameContainsAllIgnoreCase(name);
+    }
+
+    public List<Book> getBooksContainIsbn(String isbn){
+        return bookRepository.findByISBNContainsAllIgnoreCase(isbn);
     }
 }
