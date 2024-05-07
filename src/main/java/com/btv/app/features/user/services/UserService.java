@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -115,7 +116,14 @@ public class UserService {
 
     public User modifyUserMembership(User user, Membership membership){
         user.setMembership(membership);
-        user.setAvailableBorrow(membership.getMaxBook());
+        int curAvailableBorrow = user.getAvailableBorrow();
+        int curMaxBook = user.getMembership().getMaxBook();
+        user.setAvailableBorrow(membership.getMaxBook() - (curMaxBook - curAvailableBorrow));
+        if(user.getExpiredDate() == null){
+            user.setExpiredDate(LocalDate.now().plusYears(1));
+        } else{
+            user.setExpiredDate(user.getExpiredDate().plusYears(1));
+        }
         return userRepository.save(user);
     }
 

@@ -60,7 +60,7 @@ public class UserController {
         return ResponseEntity.ok(new UserController.UserListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
-    @GetMapping("admin/user/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<User> getUserByID(@PathVariable("id") Long id){
         User res = userService.getUserByID(id);
         if(res == null)
