@@ -116,4 +116,10 @@ public class BookController {
         Page<Book> res = bookService.getBooks(pageNumber, searchBy, query);
         return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
+
+    @GetMapping("admin/books-amount")
+    public ResponseEntity<Integer> getBooksAmount(){
+        Integer res = bookService.getNumberOfBooks();
+        return ResponseEntity.ok(res);
+    }
 }

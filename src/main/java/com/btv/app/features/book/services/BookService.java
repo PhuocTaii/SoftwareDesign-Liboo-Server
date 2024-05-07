@@ -1,7 +1,9 @@
 package com.btv.app.features.book.services;
 
 import com.btv.app.features.book.model.Book;
+import com.btv.app.features.genre.model.Genre;
 import com.btv.app.features.image.Image;
+import com.btv.app.features.user.models.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -115,5 +117,34 @@ public class BookService {
             return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
         }
         return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
+    }
+
+    public Integer getNumberOfBooks() {
+        return bookRepository.findAll().size();
+    }
+
+    public void deleteBookByAuthor(Long id){
+        List<Book> books = bookRepository.findByAuthor_Id(id);
+        for(Book book: books){
+            bookRepository.deleteById(book.getId());
+        }
+    }
+
+    public void deleteBookByPublisher(Long id){
+        List<Book> books = bookRepository.findByPublisher_Id(id);
+        for(Book book: books){
+            bookRepository.deleteById(book.getId());
+        }
+    }
+
+    public void deleteBookByGenre(Long id){
+        List<Book> books = bookRepository.findAll();
+        for(Book b: books){
+            for(Genre g : b.getGenres()){
+                if(g.getId().equals(id)){
+                    bookRepository.deleteById(b.getId());
+                }
+            }
+        }
     }
 }

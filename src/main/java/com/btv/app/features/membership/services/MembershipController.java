@@ -60,7 +60,7 @@ public class MembershipController {
         return ResponseEntity.ok(curMem);
     }
 
-    @GetMapping("/membership-amount")
+    @GetMapping("admin/membership-amount")
     public ResponseEntity<List<Integer>> getMembershipAmount() {
         List<User> users = userService.getAllUsers();
         List<Integer> res = membershipService.getMembershipAmount(users);
