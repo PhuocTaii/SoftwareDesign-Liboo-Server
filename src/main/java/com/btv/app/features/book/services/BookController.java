@@ -112,4 +112,10 @@ public class BookController {
             res = new ArrayList<>();
         return ResponseEntity.ok(res);
     }
+
+    @GetMapping("admin/books-amount")
+    public ResponseEntity<Integer> getBooksAmount(){
+        Integer res = bookService.getNumberOfBooks();
+        return ResponseEntity.ok(res);
+    }
 }

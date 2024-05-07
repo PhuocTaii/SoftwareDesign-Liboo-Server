@@ -37,11 +37,17 @@ public class UserController {
         public long totalItems;
     }
 
-    @GetMapping("admin/all-users")
+    @GetMapping("/admin/all-users")
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> res = userService.getAllUsers();
         if(res == null)
             throw new MyException(HttpStatus.NOT_FOUND, "No user found");
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/admin/all-readers-amount")
+    public ResponseEntity<Long> getAllReadersAmount(){
+        long res = userService.getNumberOfReaders();
         return ResponseEntity.ok(res);
     }
 
@@ -68,7 +74,7 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("admin/add-user")
+    @PostMapping("/admin/add-user")
     public ResponseEntity<User> addUser(@ModelAttribute User user){
         if(userService.getUserByEmail(user.getEmail()) != null)
             throw new MyException(HttpStatus.CONFLICT, "This email is being used ");
@@ -88,7 +94,7 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("admin/delete-user/{id}")
+    @DeleteMapping("/admin/delete-user/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") Long id){
         User curUser = userService.getUserByID(id);
         if(curUser == null){
@@ -113,7 +119,7 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping("user/modify-membership/{membershipId}")
+    @PutMapping("/user/modify-membership/{membershipId}")
     public ResponseEntity<User> modifyMembership(@PathVariable("membershipId") Long membershipId){
         User curUser = auth.getCurrentUser();
         if(curUser == null){
@@ -127,7 +133,7 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("admin/registration-by-year")
+    @GetMapping("/admin/registration-by-year")
     public ResponseEntity<List<Integer>> getUserAmountByYear(@Param("year") Integer year){
         List<Integer> res = userService.getUserByYear(year);
         return ResponseEntity.ok(res);

@@ -150,4 +150,8 @@ public class UserService {
 
         return res;
     }
+
+    public long getNumberOfReaders() {
+        return userRepository.countByRole(Role.USER);
+    }
 }
