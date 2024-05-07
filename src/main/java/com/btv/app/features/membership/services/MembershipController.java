@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping("api")
 @AllArgsConstructor
 public class MembershipController {
     private final MembershipService membershipService;
@@ -30,7 +30,7 @@ public class MembershipController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/add-membership")
+    @PostMapping("/admin/add-membership")
     public ResponseEntity<Membership> addMembership(@ModelAttribute Membership membership) {
         if(membershipService.getMembershipByType(membership.getType()) != null) {
             throw new MyException(HttpStatus.CONFLICT, "Membership already exists");
@@ -40,7 +40,7 @@ public class MembershipController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/modify-membership/{id}")
+    @PutMapping("/admin/modify-membership/{id}")
     public ResponseEntity<Membership> modifyMembership(@PathVariable("id") Long id, Membership membership) {
         Membership curMem = membershipService.getMembershipByID(id);
         if(curMem == null){
@@ -50,7 +50,7 @@ public class MembershipController {
         return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/delete-membership/{id}")
+    @DeleteMapping("/admin/delete-membership/{id}")
     public ResponseEntity<Membership> deleteMembership(@PathVariable("id") Long id) {
         Membership curMem = membershipService.getMembershipByID(id);
         if(curMem == null){
