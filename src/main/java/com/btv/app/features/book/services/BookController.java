@@ -96,21 +96,25 @@ public class BookController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/books")
-    public ResponseEntity<List<Book>> searchBook(
-            @RequestParam(value = "name", required = false, defaultValue = "") String name,
-            @RequestParam(value = "isbn", required = false, defaultValue = "") String isbn
+    @GetMapping("/books/name")
+    public ResponseEntity<List<Book>> searchBooksByName(
+            @RequestParam(value = "name", required = false, defaultValue = "") String name
     ){
-        System.out.println(name);
-        System.out.println(isbn);
-        List<Book> res;
-        if(!Objects.equals(name, "") && Objects.equals(isbn, ""))
-            res = bookService.getBookByName(name);
-        else if(!Objects.equals(isbn, "") && Objects.equals(name, ""))
-            res = bookService.getBooksContainIsbn(isbn);
-        else
-            res = new ArrayList<>();
+        List<Book> res = bookService.getBookByName(name);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/books")
+    public ResponseEntity<BookListResponse> getBooks(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
+            @RequestParam(value = "query", required = false, defaultValue = "") String query
+    ){
+        System.out.println("pageNumber = " + pageNumber);
+        System.out.println("searchBy = " + searchBy);
+        System.out.println("query = " + query);
+        Page<Book> res = bookService.getBooks(pageNumber, searchBy, query);
+        return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     @GetMapping("admin/books-amount")

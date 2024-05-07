@@ -106,8 +106,17 @@ public class BookService {
         return bookRepository.findByNameContainsAllIgnoreCase(name);
     }
 
-    public List<Book> getBooksContainIsbn(String isbn){
-        return bookRepository.findByISBNContainsAllIgnoreCase(isbn);
+    public Page<Book> getBooks(int pageNumber, String searchBy, String query){
+        if(searchBy.equals("") || query.equals("")) {
+            return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
+        }
+        if(searchBy.equals("isbn")){
+            return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+        }
+        if(searchBy.equals("name")) {
+            return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+        }
+        return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
     }
 
     public Integer getNumberOfBooks() {
