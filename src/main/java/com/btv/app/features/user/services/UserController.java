@@ -7,7 +7,9 @@ import com.btv.app.features.image.Image;
 import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.membership.services.MembershipService;
 import com.btv.app.features.transaction.services.TransactionController;
+import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
+import com.sun.tools.jconsole.JConsoleContext;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
@@ -136,6 +138,16 @@ public class UserController {
     @GetMapping("/admin/registration-by-year")
     public ResponseEntity<List<Integer>> getUserAmountByYear(@Param("year") Integer year){
         List<Integer> res = userService.getUserByYear(year);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("reader")
+    public ResponseEntity<User> getReaderByEmail(
+            @RequestParam(value = "email", required = true) String email
+    ){
+        User res = userService.getUserByEmail(email);
+        if(res == null || !res.getRole().equals(Role.USER))
+            throw new MyException(HttpStatus.NOT_FOUND, "User not found");
         return ResponseEntity.ok(res);
     }
 }

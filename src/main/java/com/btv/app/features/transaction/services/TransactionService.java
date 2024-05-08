@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -53,15 +54,22 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public Transaction returnBook(Transaction transaction, TransactionBook transactionBook, Integer diff){
-        int curFine = transaction.getFine();
+    public Transaction returnBook(Transaction transaction, TransactionBook transactionBook, Integer diff, boolean isLost){
+        int fine = calcFineForATransactionBook(transactionBook, diff, isLost);
+        transaction.setFine(transaction.getFine() + fine);
         transactionBook.setReturnDate(LocalDate.now());
-        if(diff > 0){
-            curFine += (diff * LATE_FINE);
-            transaction.setFine(curFine);
-        }
         transactionBookRepository.save(transactionBook);
         return transactionRepository.save(transaction);
+    }
+
+    public int calcFineForATransactionBook(TransactionBook transactionBook, int dateDiff, boolean isLost){
+        if(isLost){
+            return transactionBook.getBook().getPrice() * 2;
+        }
+        if(dateDiff > 0){
+            return dateDiff * LATE_FINE;
+        }
+        return 0;
     }
 
     public Transaction lostBookHandle(Transaction transaction, Book book){
