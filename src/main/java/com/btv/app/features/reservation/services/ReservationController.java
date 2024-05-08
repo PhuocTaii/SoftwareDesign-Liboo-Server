@@ -140,8 +140,7 @@ public class ReservationController {
         }
 
         //Check reservations
-        List<Reservation> userReservations = reservationService.getActiveReservationsByUser(user.getId(), LocalDate.now());
-//        List<Reservation> tmp = userReservations.stream().filter(res -> res.getPickupDate().isAfter(LocalDate.now())).toList();
+        List<Reservation> userReservations = reservationService.getActiveReservationsByUser(user.getId());
         Integer cnt = 0;
         Boolean flag = false;
         for(Reservation res:userReservations){
@@ -164,7 +163,7 @@ public class ReservationController {
 
         //Check if book is available
         for(Book b:books){
-            if(b.getQuantity() == 1){
+            if(b.getQuantity() - b.getBorrowed() <= 1){
                 announcements.add(b.getName() + " ");
                 books.remove(b);
             }
@@ -181,24 +180,24 @@ public class ReservationController {
 
         ReservationResponse res = new ReservationResponse(reserve, announcement);
 
+        // update book borrowed count
+        for(Book b:books)
+            bookService.increaseBookBorrowed(b);
+
         userService.decreaseAvailableBorrow(user, books.size());
         return ResponseEntity.ok(res);
     }
 
     //UPDATE reservation status
     @PutMapping("/librarian/update-reservation/{reservationId}")
-    public ResponseEntity<Reservation> modifyReservation(@PathVariable Long reservationId, @ModelAttribute Boolean status){
+    public ResponseEntity<Reservation> modifyReservation(@PathVariable Long reservationId){
         Reservation curRes = reservationService.getReservationByID(reservationId);
         if(curRes == null){
             throw new MyException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
 
-        if(!status){
-            throw new MyException(HttpStatus.BAD_REQUEST, "Cannot set status to NOT-PICKED-UP");
-        }
-
         Reservation res = reservationService.modifyReservationStatus(curRes, true);
-        return ResponseEntity.status(200).body(res);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping("/librarian/pending-reservations")
@@ -210,7 +209,17 @@ public class ReservationController {
     @GetMapping("/user/not-picked-up-reservations")
     public ResponseEntity <List<Reservation>> getNotPickedUpReservations(){
         User user = auth.getCurrentUser();
-        List<Reservation> res = reservationService.getNotPickedUpReservationsByUser(user.getId(), LocalDate.now());
+        List<Reservation> res = reservationService.getActiveReservationsByUser(user.getId());
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/librarian/not-picked-up-reservations")
+    public ResponseEntity <ReservationListResponse> getNotPickedUpReservationsByDate(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "date", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date,
+            @RequestParam(value = "reader-name", required = false, defaultValue = "") String readerName
+            ){
+        Page<Reservation> res = reservationService.getNotPickedUpReservationsByDateAndReaderName(pageNumber, date, readerName);
+        return ResponseEntity.ok(new ReservationController.ReservationListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 }

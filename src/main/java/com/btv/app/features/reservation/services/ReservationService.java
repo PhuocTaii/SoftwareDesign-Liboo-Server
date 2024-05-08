@@ -48,8 +48,8 @@ public class ReservationService {
         return reservationRepository.findByUser_IdAndPickupDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
-    public List<Reservation> getActiveReservationsByUser(Long userId, LocalDate date){
-        return reservationRepository.findByUser_IdAndPickupDateAfter(userId, date.minusDays(1));
+    public List<Reservation> getActiveReservationsByUser(Long userId){
+        return reservationRepository.findByUser_IdAndStatusFalseAndPickupDateAfter(userId, LocalDate.now().minusDays(1));
     }
 
     public Reservation getReservationByID(Long id){
@@ -72,8 +72,13 @@ public class ReservationService {
         return res;
     }
 
-    public List<Reservation> getNotPickedUpReservationsByUser(Long userId, LocalDate date){
-        List<Reservation> res = reservationRepository.findByUser_IdAndPickupDateAfter(userId, date);
+//    public List<Reservation> getNotPickedUpReservationsByUser(Long userId, LocalDate date){
+//        List<Reservation> res = reservationRepository.findByUser_IdAndStatusFalseAndPickupDateAfter(userId, date);
+//        return res;
+//    }
+
+    public Page<Reservation> getNotPickedUpReservationsByDateAndReaderName(int pageNumber, LocalDate date, String readerName) {
+        Page<Reservation> res = reservationRepository.findByPickupDateAndStatusFalseAndUser_NameContainsIgnoreCase(date, readerName, PageRequest.of(pageNumber, PAGE_SIZE));
         return res;
     }
 }

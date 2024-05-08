@@ -8,6 +8,7 @@ import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.renewal.model.Renewal;
 import com.btv.app.features.transaction.models.Transaction;
 import com.btv.app.features.transaction.models.TransactionBook;
+import com.btv.app.features.transaction.models.TransactionRequest;
 import com.btv.app.features.user.models.Role;
 import com.btv.app.features.user.models.User;
 import com.btv.app.features.user.services.UserService;
@@ -96,15 +97,16 @@ public class TransactionController {
     }
 
     @PostMapping("librarian/add-transaction")
-    public ResponseEntity<Transaction> addTransaction(@ModelAttribute("userId") Long userId, @ModelAttribute("bookIds") List<Long> bookIds){
+    public ResponseEntity<Transaction> addTransaction(@RequestBody TransactionRequest request){
         //Check if user have role "USER"
-        User user = userService.getUserByID(userId);
+//        User user = userService.getUserByID(userId);
+        User user = userService.getUserByEmail(request.getEmail());
         if(user == null){
             throw new MyException(HttpStatus.NOT_FOUND, "User not found");
         }
         List<Book> books = new ArrayList<>();
-        for (Long bookId : bookIds) {
-            Book book = bookService.getBookByID(bookId);
+        for (String bookIsbn : request.getIsbns()) {
+            Book book = bookService.getBookByISBN(bookIsbn);
             books.add(book);
         }
 
@@ -113,22 +115,25 @@ public class TransactionController {
             throw new MyException(HttpStatus.BAD_REQUEST, "User is not a member");
         }
 
-        if(user.getAvailableBorrow() < bookIds.size()){
+        if(user.getAvailableBorrow() < request.getIsbns().size()){
             throw new MyException(HttpStatus.BAD_REQUEST, "User is not allowed to borrow more books");
         }
 
         Membership mem = user.getMembership();
-        //Check if user is borrowing the same book
+        //Check if user is borrowing the same book and if the book is out of stock
         for(Book b : books){
-//            Boolean isBorrowed = transactionService.isBookBorrowed(user.getId(),b.getId());
             Boolean isBorrowed = transactionBookService.isBookBorrowed(user.getId(),b.getId());
             if(isBorrowed){
                 throw new MyException(HttpStatus.BAD_REQUEST, b.getName() + " is already borrowed");
+            }
+            if(b.getQuantity() - b.getBorrowed() <= 1){
+                throw new MyException(HttpStatus.BAD_REQUEST, b.getName() + " is out of stock");
             }
         }
 
         Transaction res = transactionService.addTransaction(user);
         transactionBookService.addTransactionBooks(res, books);
+
         //update book borrowed count
         for(Book b: books){
             bookService.increaseBookBorrowed(b);

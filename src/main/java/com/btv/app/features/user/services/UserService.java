@@ -115,9 +115,9 @@ public class UserService {
     }
 
     public User modifyUserMembership(User user, Membership membership){
+        int curMaxBook = user.getMembership().getMaxBook();
         user.setMembership(membership);
         int curAvailableBorrow = user.getAvailableBorrow();
-        int curMaxBook = user.getMembership().getMaxBook();
         user.setAvailableBorrow(membership.getMaxBook() - (curMaxBook - curAvailableBorrow));
         if(user.getExpiredDate() == null){
             user.setExpiredDate(LocalDate.now().plusYears(1));
