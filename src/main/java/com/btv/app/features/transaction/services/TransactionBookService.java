@@ -43,8 +43,11 @@ public class TransactionBookService {
     public TransactionBook getTransactionBookByTransactionAndBook(Long transactionId, Long bookId) {
         return transactionBookRepository.findByTransaction_IdAndBook_Id(transactionId, bookId);
     }
+    public TransactionBook getLatestTransactionBookByUserAndBook(Long userId, String isbn) {
+        return transactionBookRepository.findFirstByTransaction_User_IdAndBook_ISBNOrderByIdDesc(userId, isbn);
+    }
     public Boolean isBookBorrowed(Long userId, Long bookId){
-        return transactionBookRepository.existsByTransaction_User_IdAndBook_IdAndReturnDateNotNull(userId, bookId);
+        return transactionBookRepository.existsByTransaction_User_IdAndBook_IdAndReturnDateNull(userId, bookId);
     }
 
     public List<TransactionBook> getBorrowingBooks(){

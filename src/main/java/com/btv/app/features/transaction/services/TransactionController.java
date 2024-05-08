@@ -142,11 +142,48 @@ public class TransactionController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping("librarian/return-book/{transactionId}/{bookId}")
-    public ResponseEntity<TransactionResponse> returnBook(@PathVariable("transactionId") Long transactionId, @PathVariable("bookId") Long bookId){
+    @PutMapping("librarian/return-book/{transactionBookId}")
+    public ResponseEntity<TransactionResponse> returnBook(
+            @PathVariable("transactionBookId") Long transactionBookId,
+            @RequestParam(value = "lost", required = false, defaultValue = "false") Boolean isLost
+    ){
         String message = "Return success";
-        TransactionBook transactionBook = transactionBookService.getTransactionBookByTransactionAndBook(transactionId, bookId);
-        Transaction transaction = transactionService.getTransactionById(transactionId);
+        TransactionBook transactionBook = transactionBookService.getTransactionBookById(transactionBookId);
+        if(transactionBook == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Transaction book not found");
+        }
+        Transaction transaction = transactionBook.getTransaction();
+        if(transactionBook.getReturnDate() != null){
+            throw new MyException(HttpStatus.BAD_REQUEST, "Book is already returned");
+        }
+
+        Transaction updatedTransaction;
+        int diff = Math.toIntExact(ChronoUnit.DAYS.between(transactionBook.getDueDate(), LocalDate.now()));
+        updatedTransaction = transactionService.returnBook(transaction, transactionBook, diff, isLost);
+        if(isLost) {
+            Book book = transactionBook.getBook();
+            bookService.decreaseBookBorrowed(book);
+        }
+        else {
+            //Find difference between due date and return date
+            if(diff > 0){
+                message = "User is late!" + diff + " days";
+            }
+        }
+
+        //update book borrowed count
+        userService.increaseAvailableBorrow(transaction.getUser());
+        bookService.decreaseBookBorrowed(transactionBook.getBook());
+        TransactionResponse res = new TransactionResponse(updatedTransaction, message);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("librarian/return-book/info/{transactionBookId}")
+    public ResponseEntity<HashMap<String, Integer>> getReturnBookInfo(
+            @PathVariable("transactionBookId") Long transactionBookId,
+            @RequestParam(value = "lost", required = false, defaultValue = "false") Boolean isLost
+    ){
+        TransactionBook transactionBook = transactionBookService.getTransactionBookById(transactionBookId);
         if(transactionBook == null){
             throw new MyException(HttpStatus.NOT_FOUND, "Transaction book not found");
         }
@@ -155,21 +192,30 @@ public class TransactionController {
             throw new MyException(HttpStatus.BAD_REQUEST, "Book is already returned");
         }
 
-
         //Find difference between due date and return date
         int diff = Math.toIntExact(ChronoUnit.DAYS.between(transactionBook.getDueDate(), LocalDate.now()));
-        if(diff > 0){
-            message = "User is late!";
-        }
-        Transaction trans = transactionService.returnBook(transaction, transactionBook, diff);
+        int fine = transactionService.calcFineForATransactionBook(transactionBook, diff, isLost);
 
-        //update book borrowed count
-        bookService.decreaseBookBorrowed(transactionBook.getBook());
-        userService.increaseAvailableBorrow(transaction.getUser());
-
-        TransactionResponse res = new TransactionResponse(trans, message);
-        return ResponseEntity.ok(res);
+        return ResponseEntity.ok(new HashMap<>() {{
+            put("diff", diff);
+            put("fine", fine);
+        }});
     }
+
+    @GetMapping("librarian/transaction-book/{userId}/{isbn}")
+    public ResponseEntity<TransactionBook> getActiveTransactionBookByUserAndBook(@PathVariable("userId") Long userId, @PathVariable("isbn") String isbn){
+        TransactionBook transactionBook = transactionBookService.getLatestTransactionBookByUserAndBook(userId, isbn);
+        if(transactionBook == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Transaction book not found");
+        }
+
+        if(transactionBook.getReturnDate() != null){
+            throw new MyException(HttpStatus.BAD_REQUEST, "Book is already returned");
+        }
+
+        return ResponseEntity.ok(transactionBook);
+    }
+
     @PutMapping("user/lost-book/{transactionId}/{bookId}")
     public ResponseEntity<TransactionResponse> lostBook(@PathVariable("transactionId") Long transactionId, @PathVariable("bookId") Long bookId){
         TransactionBook transactionBook = transactionBookService.getTransactionBookByTransactionAndBook(transactionId, bookId);
