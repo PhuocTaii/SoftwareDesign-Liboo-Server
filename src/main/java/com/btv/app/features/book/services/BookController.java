@@ -108,12 +108,15 @@ public class BookController {
     public ResponseEntity<BookListResponse> getBooks(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
-            @RequestParam(value = "query", required = false, defaultValue = "") String query
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
     ){
         System.out.println("pageNumber = " + pageNumber);
         System.out.println("searchBy = " + searchBy);
         System.out.println("query = " + query);
-        Page<Book> res = bookService.getBooks(pageNumber, searchBy, query);
+        System.out.println("sortBy = " + sortBy);
+
+        Page<Book> res = bookService.getBooks(pageNumber, searchBy, query, sortBy);
         return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 

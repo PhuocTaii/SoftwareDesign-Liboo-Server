@@ -106,17 +106,35 @@ public class BookService {
         return bookRepository.findByNameContainsAllIgnoreCase(name);
     }
 
-    public Page<Book> getBooks(int pageNumber, String searchBy, String query){
+    public Page<Book> getBooks(int pageNumber, String searchBy, String query, String sortBy){
+        String sortField;
+        boolean sortAsc = true;
+
+        switch (sortBy) {
+            case "borrowed-asc" -> sortField = "borrowed";
+            case "borrowed-desc" -> {
+                sortField = "borrowed";
+                sortAsc = false;
+            }
+            case "name-asc" -> sortField = "name";
+            case "name-desc" -> {
+                sortField = "name";
+                sortAsc = false;
+            }
+            default -> sortField = "id";
+        }
+        Sort sort = Sort.by(sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+
         if(searchBy.equals("") || query.equals("")) {
-            return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
+            return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         if(searchBy.equals("isbn")){
-            return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+            return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         if(searchBy.equals("name")) {
-            return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+            return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-        return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
+        return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
 
     public Integer getNumberOfBooks() {
