@@ -50,6 +50,7 @@ public class AuthenticationService {
                 .address(request.getAddress())
                 .gender(request.getGender())
                 .phone(request.getPhone())
+                .role(Role.USER)
                 .build();
         userRepository.save(user);
         var jwt = jwtProvider.generateToken(user);

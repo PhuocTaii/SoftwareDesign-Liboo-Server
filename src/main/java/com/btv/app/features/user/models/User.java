@@ -73,7 +73,6 @@ public class User implements UserDetails {
     @PrePersist
     private void onCreate() {
         joinedDate = LocalDate.now();
-        role = Role.USER;
         membership = new Membership(1);
         expiredDate = null;
         availableBorrow = membership.getMaxBook();

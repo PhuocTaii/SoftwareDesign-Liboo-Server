@@ -65,13 +65,4 @@ public class GenreController {
         return ResponseEntity.ok(tmp);
     }
 
-    @DeleteMapping("/delete-genre/{id}")
-    public ResponseEntity<Genre> deleteGenre(@PathVariable("id") Long id){
-        Genre curGenre = genreService.getGenreByID(id);
-        if(curGenre == null){
-            throw new MyException(HttpStatus.NOT_FOUND, "Genre not found");
-        }
-        genreService.deleteGenre(id);
-        return ResponseEntity.ok(curGenre);
-    }
 }

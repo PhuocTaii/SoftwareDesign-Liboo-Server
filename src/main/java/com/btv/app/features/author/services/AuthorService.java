@@ -46,11 +46,6 @@ public class AuthorService {
         return authorRepository.save(curAuthor);
     }
 
-    public void deleteAuthor(Long id){
-        bookService.deleteBookByAuthor(id);
-        authorRepository.deleteById(id);
-    }
-
     public Author getAuthorByName(String name){
         return authorRepository.findByName(name);
     }

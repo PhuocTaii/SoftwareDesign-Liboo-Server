@@ -41,11 +41,6 @@ public class GenreService {
         return genreRepository.save(curGenre);
     }
 
-    public void deleteGenre(Long id){
-        bookService.deleteBookByGenre(id);
-        genreRepository.deleteById(id);
-    }
-
     public Genre findByName(String name){
         return genreRepository.findByName(name);
     }

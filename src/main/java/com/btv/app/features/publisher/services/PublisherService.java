@@ -45,11 +45,6 @@ public class PublisherService {
         return publisherRepository.save(curPub);
     }
 
-    public void deletePublisher(Long id){
-        bookService.deleteBookByPublisher(id);
-        publisherRepository.deleteById(id);
-    }
-
     public Publisher getPublicByName(String name){
         return publisherRepository.findByName(name);
     }

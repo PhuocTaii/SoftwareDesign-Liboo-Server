@@ -106,45 +106,33 @@ public class BookService {
         return bookRepository.findByNameContainsAllIgnoreCase(name);
     }
 
+//    public Page<Book> getBookByGenre(String name, int pageNumber){
+//        return bookRepository.findByGenres_NameInAllIgnoreCase(name, PageRequest.of(pageNumber, PAGE_SIZE));
+//    }
+
     public Page<Book> getBooks(int pageNumber, String searchBy, String query){
         if(searchBy.equals("") || query.equals("")) {
             return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
         }
-        if(searchBy.equals("isbn")){
+        if(searchBy.equals("isbn") || searchBy.equals("ISBN")){
             return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
         }
         if(searchBy.equals("name")) {
             return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
         }
+        if(searchBy.equals("author")) {
+            return bookRepository.findByAuthor_NameAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+        }
+        if(searchBy.equals("publisher")) {
+            return bookRepository.findByPublisher_NameAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+        }
+//        if(searchBy.equals("genre")) {
+//            return bookRepository.findByGenres_NameInAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+//        }
         return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
     }
 
     public Integer getNumberOfBooks() {
         return bookRepository.findAll().size();
-    }
-
-    public void deleteBookByAuthor(Long id){
-        List<Book> books = bookRepository.findByAuthor_Id(id);
-        for(Book book: books){
-            bookRepository.deleteById(book.getId());
-        }
-    }
-
-    public void deleteBookByPublisher(Long id){
-        List<Book> books = bookRepository.findByPublisher_Id(id);
-        for(Book book: books){
-            bookRepository.deleteById(book.getId());
-        }
-    }
-
-    public void deleteBookByGenre(Long id){
-        List<Book> books = bookRepository.findAll();
-        for(Book b: books){
-            for(Genre g : b.getGenres()){
-                if(g.getId().equals(id)){
-                    bookRepository.deleteById(b.getId());
-                }
-            }
-        }
     }
 }
