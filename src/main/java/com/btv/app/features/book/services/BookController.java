@@ -6,7 +6,6 @@ import com.btv.app.features.book.model.Book;
 import com.btv.app.features.image.Image;
 import com.btv.app.features.transaction.models.Transaction;
 import com.btv.app.features.user.models.User;
-import com.btv.app.features.user.services.UserController;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,6 +40,7 @@ public class BookController {
         Page<Book> res = bookService.getAllBooks(pageNumber);
         return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
+
     @GetMapping("/book/{id}")
     public ResponseEntity<Book> getBookByID(@PathVariable("id") Long id){
         Book res = bookService.getBookByID(id);
@@ -105,22 +105,30 @@ public class BookController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/books")
+    @GetMapping("admin/books")
     public ResponseEntity<BookListResponse> getBooks(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
-            @RequestParam(value = "query", required = false, defaultValue = "") String query
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
     ){
-        System.out.println("searchBy: " + searchBy);
-        System.out.println("query: " + query);
-        System.out.println("pageNumber: " + pageNumber);
-        Page<Book> res = bookService.getBooks(pageNumber, searchBy, query);
+        Page<Book> res = bookService.getBooks(pageNumber, searchBy, query, sortBy);
         return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     @GetMapping("admin/books-amount")
     public ResponseEntity<Integer> getBooksAmount(){
         Integer res = bookService.getNumberOfBooks();
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("admin/modify-book-status/{id}")
+    public ResponseEntity<Book> modifyBook(@PathVariable("id") Long id, @RequestParam("status") Boolean status){
+        Book book = bookService.getBookByID(id);
+        if(book == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
+        }
+        Book res = bookService.modifyBookStatus(book, status);
         return ResponseEntity.ok(res);
     }
 }

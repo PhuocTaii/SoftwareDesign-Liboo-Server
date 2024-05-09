@@ -103,6 +103,21 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
+    @PutMapping("admin/modify-user-status/{id}")
+    public ResponseEntity<User> modifyUser(@PathVariable("id") Long id, @RequestParam("status") Boolean status){
+        User user = userService.getUserByID(id);
+        if(user == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        User curUser = auth.getCurrentUser();
+        if(Objects.equals(curUser.getId(), id)){
+            throw new MyException(HttpStatus.CONFLICT, "You can't lock yourself");
+        }
+
+        User res = userService.modifyUserStatus(user, status);
+        return ResponseEntity.ok(res);
+    }
+
     @DeleteMapping("/admin/delete-user/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") Long id){
         User curUser = userService.getUserByID(id);

@@ -81,6 +81,10 @@ public class AuthenticationService {
            return null;
         }
 
+        if(user.getStatus()){
+            throw new MyException(HttpStatus.NOT_FOUND, "User is blocked");
+        }
+
         var jwt = jwtProvider.generateToken(user);
         var refreshJwt = jwtProvider.generateRefreshToken(user);
         return AuthenticationResponse.builder()
@@ -109,6 +113,10 @@ public class AuthenticationService {
             return null;
         }
 
+        if(user.getStatus()){
+            throw new MyException(HttpStatus.NOT_FOUND, "User is blocked");
+        }
+
         var jwt = jwtProvider.generateToken(user);
         var refreshJwt = jwtProvider.generateRefreshToken(user);
         return AuthenticationResponse.builder()
@@ -135,6 +143,10 @@ public class AuthenticationService {
 
         if(user.getRole() != Role.LIBRARIAN){
             return null;
+        }
+
+        if(user.getStatus()){
+            throw new MyException(HttpStatus.NOT_FOUND, "User is blocked");
         }
 
         var jwt = jwtProvider.generateToken(user);

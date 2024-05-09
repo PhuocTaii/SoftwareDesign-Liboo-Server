@@ -4,6 +4,7 @@ import com.btv.app.features.book.model.Book;
 import com.btv.app.features.genre.model.Genre;
 import com.btv.app.features.image.Image;
 import com.btv.app.features.user.models.Role;
+import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -81,9 +82,6 @@ public class BookService {
     }
 
     public Book increaseBookBorrowed(Book book){
-
-
-
         book.setBorrowed(book.getBorrowed() + 1);
         return bookRepository.save(book);
     }
@@ -106,33 +104,58 @@ public class BookService {
         return bookRepository.findByNameContainsAllIgnoreCase(name);
     }
 
-//    public Page<Book> getBookByGenre(String name, int pageNumber){
-//        return bookRepository.findByGenres_NameInAllIgnoreCase(name, PageRequest.of(pageNumber, PAGE_SIZE));
-//    }
+    public Page<Book> getBooks(int pageNumber, String searchBy, String query, String sortBy){
+        String sortField;
+        boolean sortAsc = true;
 
-    public Page<Book> getBooks(int pageNumber, String searchBy, String query){
+        switch (sortBy) {
+            case "borrowed-asc" -> sortField = "borrowed";
+            case "borrowed-desc" -> {
+                sortField = "borrowed";
+                sortAsc = false;
+            }
+            case "name-asc" -> sortField = "name";
+            case "name-desc" -> {
+                sortField = "name";
+                sortAsc = false;
+            }
+            case "quantity-asc" -> sortField = "quantity";
+
+            case "quantity-desc" -> {
+                sortField = "quantity";
+                sortAsc = false;
+            }
+            default -> sortField = "id";
+        }
+        Sort sort = Sort.by(sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+
         if(searchBy.equals("") || query.equals("")) {
-            return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
+            return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         if(searchBy.equals("isbn") || searchBy.equals("ISBN")){
-            return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+            return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         if(searchBy.equals("name")) {
-            return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+            return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-        if(searchBy.equals("author")) {
-            return bookRepository.findByAuthor_NameAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+        if(searchBy.equals("author")){
+            return bookRepository.findByAuthor_NameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-        if(searchBy.equals("publisher")) {
-            return bookRepository.findByPublisher_NameAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
+        if(searchBy.equals("publisher")){
+            return bookRepository.findByPublisher_NameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-//        if(searchBy.equals("genre")) {
-//            return bookRepository.findByGenres_NameInAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE));
-//        }
-        return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
+        if(searchBy.equals("genre")){
+            return bookRepository.findByGenres_NameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
 
     public Integer getNumberOfBooks() {
         return bookRepository.findAll().size();
+    }
+
+    public Book modifyBookStatus(Book book, Boolean status){
+        book.setStatus(status);
+        return bookRepository.save(book);
     }
 }

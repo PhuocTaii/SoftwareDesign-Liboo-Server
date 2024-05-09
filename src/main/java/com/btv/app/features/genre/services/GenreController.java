@@ -4,6 +4,7 @@ import com.btv.app.exception.MyException;
 import com.btv.app.features.author.model.Author;
 import com.btv.app.features.author.services.AuthorController;
 import com.btv.app.features.genre.model.Genre;
+import com.btv.app.features.publisher.model.Publisher;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -63,6 +64,12 @@ public class GenreController {
             throw new MyException(HttpStatus.BAD_REQUEST, "Genre already exists");
         }
         return ResponseEntity.ok(tmp);
+    }
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<Genre>> getAllPublishers(){
+        List<Genre> res = genreService.allGenres();
+        return ResponseEntity.ok(res);
     }
 
 }

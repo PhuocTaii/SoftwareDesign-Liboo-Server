@@ -70,12 +70,16 @@ public class User implements UserDetails {
     @Column(name = "available_borrow")
     private Integer availableBorrow;
 
+    @Column(name = "status")
+    private Boolean status; //1: banned, 0: active
+
     @PrePersist
     private void onCreate() {
         joinedDate = LocalDate.now();
         membership = new Membership(1);
         expiredDate = null;
         availableBorrow = membership.getMaxBook();
+        status = false;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -21,6 +21,10 @@ public class PublisherService {
     private final BookService bookService;
     private final Integer PAGE_SIZE = 5;
 
+    public List<Publisher> allPublisher(){
+        return publisherRepository.findAll();
+    }
+
     public Page<Publisher> getAllPublishers(int pageNumber) {
         return publisherRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").ascending()));
     }

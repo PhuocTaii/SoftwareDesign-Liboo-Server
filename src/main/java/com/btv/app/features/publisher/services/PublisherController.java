@@ -17,11 +17,11 @@ import java.util.List;
 @AllArgsConstructor
 public class PublisherController {
     private final PublisherService publisherService;
-//    @GetMapping("/all-publishers")
-//    public ResponseEntity<List<Publisher>> getAllPublishers(){
-//        List<Publisher> res = publisherService.getAllPublishers();
-//        return ResponseEntity.ok(res);
-//    }
+    @GetMapping("/publishers")
+    public ResponseEntity<List<Publisher>> getAllPublishers(){
+        List<Publisher> res = publisherService.allPublisher();
+        return ResponseEntity.ok(res);
+    }
     @AllArgsConstructor
     public static class PublisherListResponse {
         public List<Publisher> publishers;
@@ -63,4 +63,5 @@ public class PublisherController {
         }
         return ResponseEntity.ok(res);
     }
+
 }

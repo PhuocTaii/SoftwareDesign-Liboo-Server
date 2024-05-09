@@ -108,7 +108,7 @@ public class UserService {
                 .phone(user.getPhone())
                 .role(role)
                 .build();
-        return userRepository.save(user);
+        return userRepository.save(res);
     }
 
     public User modifyUser(User curUser, User updateUser){
@@ -134,6 +134,11 @@ public class UserService {
         return userRepository.save(curUser);
     }
 
+    public User modifyUserStatus(User user, Boolean status){
+        user.setStatus(status);
+        return userRepository.save(user);
+    }
+
     public void deleteUser(Long id){
         userRepository.deleteById(id);
     }
@@ -154,9 +159,9 @@ public class UserService {
     }
 
     public User modifyUserMembership(User user, Membership membership){
+        int curMaxBook = user.getMembership().getMaxBook();
         user.setMembership(membership);
         int curAvailableBorrow = user.getAvailableBorrow();
-        int curMaxBook = user.getMembership().getMaxBook();
         user.setAvailableBorrow(membership.getMaxBook() - (curMaxBook - curAvailableBorrow));
         if(user.getExpiredDate() == null){
             user.setExpiredDate(LocalDate.now().plusYears(1));

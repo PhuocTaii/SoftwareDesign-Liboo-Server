@@ -22,6 +22,10 @@ public class GenreService {
     public Page<Genre> getAllGenres(int pageNumber) {
         return genreRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").ascending()));
     }
+
+    public List<Genre> allGenres(){
+        return genreRepository.findAll();
+    }
     public Genre getGenreByID(Long id){
         Optional<Genre> optionalGenre = genreRepository.findById(id);
         return optionalGenre.orElse(null);
