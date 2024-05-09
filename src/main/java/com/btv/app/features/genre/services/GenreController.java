@@ -4,6 +4,7 @@ import com.btv.app.exception.MyException;
 import com.btv.app.features.author.model.Author;
 import com.btv.app.features.author.services.AuthorController;
 import com.btv.app.features.genre.model.Genre;
+import com.btv.app.features.publisher.model.Publisher;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -65,13 +66,10 @@ public class GenreController {
         return ResponseEntity.ok(tmp);
     }
 
-    @DeleteMapping("/delete-genre/{id}")
-    public ResponseEntity<Genre> deleteGenre(@PathVariable("id") Long id){
-        Genre curGenre = genreService.getGenreByID(id);
-        if(curGenre == null){
-            throw new MyException(HttpStatus.NOT_FOUND, "Genre not found");
-        }
-        genreService.deleteGenre(id);
-        return ResponseEntity.ok(curGenre);
+    @GetMapping("/genres")
+    public ResponseEntity<List<Genre>> getAllPublishers(){
+        List<Genre> res = genreService.allGenres();
+        return ResponseEntity.ok(res);
     }
+
 }

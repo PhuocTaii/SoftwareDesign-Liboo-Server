@@ -4,6 +4,7 @@ import com.btv.app.features.book.model.Book;
 import com.btv.app.features.genre.model.Genre;
 import com.btv.app.features.image.Image;
 import com.btv.app.features.user.models.Role;
+import com.btv.app.features.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -81,9 +82,6 @@ public class BookService {
     }
 
     public Book increaseBookBorrowed(Book book){
-
-
-
         book.setBorrowed(book.getBorrowed() + 1);
         return bookRepository.save(book);
     }
@@ -121,6 +119,12 @@ public class BookService {
                 sortField = "name";
                 sortAsc = false;
             }
+            case "quantity-asc" -> sortField = "quantity";
+
+            case "quantity-desc" -> {
+                sortField = "quantity";
+                sortAsc = false;
+            }
             default -> sortField = "id";
         }
         Sort sort = Sort.by(sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
@@ -128,11 +132,20 @@ public class BookService {
         if(searchBy.equals("") || query.equals("")) {
             return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-        if(searchBy.equals("isbn")){
+        if(searchBy.equals("isbn") || searchBy.equals("ISBN")){
             return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         if(searchBy.equals("name")) {
             return bookRepository.findByNameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        if(searchBy.equals("author")){
+            return bookRepository.findByAuthor_NameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        if(searchBy.equals("publisher")){
+            return bookRepository.findByPublisher_NameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        if(searchBy.equals("genre")){
+            return bookRepository.findByGenres_NameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
@@ -141,28 +154,8 @@ public class BookService {
         return bookRepository.findAll().size();
     }
 
-    public void deleteBookByAuthor(Long id){
-        List<Book> books = bookRepository.findByAuthor_Id(id);
-        for(Book book: books){
-            bookRepository.deleteById(book.getId());
-        }
-    }
-
-    public void deleteBookByPublisher(Long id){
-        List<Book> books = bookRepository.findByPublisher_Id(id);
-        for(Book book: books){
-            bookRepository.deleteById(book.getId());
-        }
-    }
-
-    public void deleteBookByGenre(Long id){
-        List<Book> books = bookRepository.findAll();
-        for(Book b: books){
-            for(Genre g : b.getGenres()){
-                if(g.getId().equals(id)){
-                    bookRepository.deleteById(b.getId());
-                }
-            }
-        }
+    public Book modifyBookStatus(Book book, Boolean status){
+        book.setStatus(status);
+        return bookRepository.save(book);
     }
 }

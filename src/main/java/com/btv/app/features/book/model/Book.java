@@ -3,11 +3,13 @@ package com.btv.app.features.book.model;
 import com.btv.app.features.author.model.Author;
 import com.btv.app.features.genre.model.Genre;
 import com.btv.app.features.image.Image;
+import com.btv.app.features.membership.model.Membership;
 import com.btv.app.features.publisher.model.Publisher;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,4 +51,11 @@ public class Book {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
+    @Column(name = "status")
+    private Boolean status; //1: unavailable, 0: available
+
+    @PrePersist
+    private void onCreate() {
+        status = false;
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,6 +21,8 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final Integer PAGE_SIZE = 20;
+    private final PasswordEncoder passwordEncoder;
+
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -58,18 +61,54 @@ public class UserService {
         return userRepository.findByRoleAndNameContainsAllIgnoreCase(Role.USER, query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
 
+    public Page<User> getAccounts(int pageNumber, String searchBy, String query, String sortBy){
+        String sortField;
+        boolean sortAsc = true;
+
+        switch (sortBy) {
+            case "name-asc" -> sortField = "name";
+            case "name-desc" -> {
+                sortField = "name";
+                sortAsc = false;
+            }
+            case "joined-date-asc" -> sortField = "joinedDate";
+            case "joined-date-desc" -> {
+                sortField = "joinedDate";
+                sortAsc = false;
+            }
+            default -> sortField = "id";
+        }
+        Sort sort = Sort.by(sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+
+        if(searchBy.equals("") || query.equals("")) {
+            return userRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        return userRepository.findByNameContainsIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+    }
+
     public User getUserByID(Long id){
         Optional<User> optionalUser = userRepository.findById(id);
         return optionalUser.orElse(null);
     }
-    public User addUser(User user){
+    public User addUser(User user, Role role){
         if(userRepository.existsByEmail(user.getEmail())){
             throw new DataIntegrityViolationException("Email already exists");
         }
         else if(userRepository.existsByIdentifier(user.getIdentifier())){
             throw new DataIntegrityViolationException("Identifier already exists");
         }
-        return userRepository.save(user);
+        User res = User.builder()
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(user.getPassword()))
+                .name(user.getName())
+                .identifier(user.getIdentifier())
+                .birthDate(user.getBirthDate())
+                .address(user.getAddress())
+                .gender(user.getGender())
+                .phone(user.getPhone())
+                .role(role)
+                .build();
+        return userRepository.save(res);
     }
 
     public User modifyUser(User curUser, User updateUser){
@@ -93,6 +132,11 @@ public class UserService {
         }
 
         return userRepository.save(curUser);
+    }
+
+    public User modifyUserStatus(User user, Boolean status){
+        user.setStatus(status);
+        return userRepository.save(user);
     }
 
     public void deleteUser(Long id){

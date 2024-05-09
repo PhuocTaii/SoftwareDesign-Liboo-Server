@@ -53,18 +53,25 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/readers")
+    @GetMapping("librarian/readers")
     public ResponseEntity<UserListResponse> getReaders(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
             @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
     ){
-        System.out.println("searchBy = " + searchBy);
-        System.out.println("query = " + query);
-        System.out.println("sortBy = " + sortBy);
-
         Page<User> res = userService.getReaders(pageNumber, searchBy, query, sortBy);
+        return ResponseEntity.ok(new UserController.UserListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+    }
+
+    @GetMapping("admin/accounts")
+    public ResponseEntity<UserListResponse> getAccounts(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
+    ){
+        Page<User> res = userService.getAccounts(pageNumber, searchBy, query, sortBy);
         return ResponseEntity.ok(new UserController.UserListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
@@ -77,12 +84,13 @@ public class UserController {
     }
 
     @PostMapping("/admin/add-user")
-    public ResponseEntity<User> addUser(@ModelAttribute User user){
+    public ResponseEntity<User> addUser(@RequestBody User user){
         if(userService.getUserByEmail(user.getEmail()) != null)
             throw new MyException(HttpStatus.CONFLICT, "This email is being used ");
         else if(userService.getUserByIdentifier(user.getIdentifier()) != null)
             throw new MyException(HttpStatus.CONFLICT, "This identifier is being used ");
-        User res = userService.addUser(user);
+        Role role = user.getRole();
+        User res = userService.addUser(user, role);
         return ResponseEntity.ok(res);
     }
 
@@ -93,6 +101,21 @@ public class UserController {
             throw new MyException(HttpStatus.NOT_FOUND, "User not found");
         }
         User res = userService.modifyUser(curUser, user);
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("admin/modify-user-status/{id}")
+    public ResponseEntity<User> modifyUser(@PathVariable("id") Long id, @RequestParam("status") Boolean status){
+        User user = userService.getUserByID(id);
+        if(user == null){
+            throw new MyException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        User curUser = auth.getCurrentUser();
+        if(Objects.equals(curUser.getId(), id)){
+            throw new MyException(HttpStatus.CONFLICT, "You can't lock yourself");
+        }
+
+        User res = userService.modifyUserStatus(user, status);
         return ResponseEntity.ok(res);
     }
 
