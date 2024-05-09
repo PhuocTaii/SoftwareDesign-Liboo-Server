@@ -30,8 +30,11 @@ public class RenewalService {
         return renewalRepository.findByTransactionBook_Transaction_UserAndRequestDateBetween(user, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
+    public Page<Renewal> getRenewalByRequestDate(LocalDate dateFrom, LocalDate dateTo, int pageNumber) {
+        return renewalRepository.findByRequestDateBetween(dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
     public Renewal requestRenewal(Renewal renewal) {
-        System.out.println(renewal);
         return renewalRepository.save(renewal);
     }
 }
