@@ -44,13 +44,13 @@ public class ReservationController {
         public String message;
     }
 
-    @GetMapping("/librarian/all-reservations")
-    public ResponseEntity<List<Reservation>> getAllReservations(){
-        List<Reservation> res = reservationService.getAllReservations();
-        if(res == null)
-            throw new MyException(HttpStatus.NOT_FOUND, "No reservation found");
-        return ResponseEntity.ok(res);
-    }
+//    @GetMapping("/librarian/all-reservations")
+//    public ResponseEntity<List<Reservation>> getAllReservations(){
+//        List<Reservation> res = reservationService.getAllReservations();
+//        if(res == null)
+//            throw new MyException(HttpStatus.NOT_FOUND, "No reservation found");
+//        return ResponseEntity.ok(res);
+//    }
 
     //GET all reservations of a user
     @GetMapping("/librarian/reservations/user/{id}")
@@ -85,6 +85,31 @@ public class ReservationController {
             res = reservationService.getReservationsOfUserByPickupDate(user.getId(), dateFrom, dateTo, pageNumber);
         else
             res = reservationService.getReservationsOfUser(user.getId(), pageNumber);
+
+        return ResponseEntity.ok(new ReservationController.ReservationListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+    }
+
+    @GetMapping("/librarian/reservations")
+    public ResponseEntity<ReservationListResponse> getAllReservations(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "filter-by", required = false) String filterOption,
+            @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
+    ){
+        System.out.println("filterOption" + filterOption);
+        System.out.println("dateFrom" + dateFrom);
+        System.out.println("dateTo" + dateTo);
+
+        Page<Reservation> res;
+
+        if(Objects.equals(filterOption, "") || dateFrom == null || dateTo == null)
+            res = reservationService.getAllReservations(pageNumber);
+        else if(Objects.equals(filterOption, "reserve-date"))
+            res = reservationService.getReservationsByReserveDate(dateFrom, dateTo, pageNumber);
+        else if(Objects.equals(filterOption, "pickup-date"))
+            res = reservationService.getReservationsByPickupDate(dateFrom, dateTo, pageNumber);
+        else
+            res = reservationService.getAllReservations(pageNumber);
 
         return ResponseEntity.ok(new ReservationController.ReservationListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }

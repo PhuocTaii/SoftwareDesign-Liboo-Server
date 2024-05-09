@@ -15,4 +15,7 @@ public interface RenewalRepository extends JpaRepository<Renewal, Long> {
     Page<Renewal> findByTransactionBook_Transaction_User(User user, Pageable pageable);
 
     Page<Renewal> findByTransactionBook_Transaction_UserAndRequestDateBetween(User user, LocalDate requestDateStart, LocalDate requestDateEnd, Pageable pageable);
+
+    Page<Renewal> findByRequestDateBetween(LocalDate requestDateStart, LocalDate requestDateEnd, Pageable pageable);
+
 }

@@ -23,8 +23,8 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final TransactionBookRepository transactionBookRepository;
-    public List<Transaction> getAllTransaction(){
-        return transactionRepository.findAll();
+    public Page<Transaction> getAllTransaction(int pageNumber){
+        return transactionRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public Page<Transaction> getTransactionByUser(Long userId, int pageNumber){
@@ -35,12 +35,24 @@ public class TransactionService {
         return transactionRepository.findByUser_IdAndBorrowedDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
+    public Page<Transaction> getTransactionByBorrowedDate(LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return transactionRepository.findByBorrowedDateBetween(dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
     public Page<Transaction> getTransactionByUserAndReturnDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
         return transactionRepository.findByUser_IdAndTransactionBooks_ReturnDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
+    public Page<Transaction> getTransactionByReturnDate(LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return transactionRepository.findByTransactionBooks_ReturnDateBetween(dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
     public Page<Transaction> getTransactionByUserAndDueDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
         return transactionRepository.findByUser_IdAndTransactionBooks_DueDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public Page<Transaction> getTransactionByDueDate(LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return transactionRepository.findByTransactionBooks_DueDateBetween(dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public Transaction getTransactionById(Long id){
