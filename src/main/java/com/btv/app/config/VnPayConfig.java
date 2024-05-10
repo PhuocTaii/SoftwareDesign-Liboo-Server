@@ -20,8 +20,10 @@ import javax.crypto.spec.SecretKeySpec;
 public class VnPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_Returnurl = "/vnpay-payment-return";
-    public static String vnp_TmnCode = "Y0UKRE65";
-    public static String vnp_HashSecret = "2CPFHNAFFBV3TVMDDPEHOH8HLGLPBAI5";
+
+    public static Dotenv dotenv = Dotenv.load();
+    public static String vnp_TmnCode = dotenv.get("vnp_TmnCode");
+    public static String vnp_HashSecret = dotenv.get("vnp_HashSecret");
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     public static String md5(String message) {
