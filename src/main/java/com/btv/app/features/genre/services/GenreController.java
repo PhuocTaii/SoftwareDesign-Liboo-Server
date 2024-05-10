@@ -18,11 +18,6 @@ import java.util.List;
 @RequestMapping("api/admin")
 public class GenreController {
     private final GenreService genreService;
-//    @GetMapping("/all-genres")
-//    public ResponseEntity<List<Genre>> getAllGenres(){
-//        List<Genre> res = genreService.getAllGenres();
-//        return ResponseEntity.ok(res);
-//    }
 
     @AllArgsConstructor
     public static class GenreListResponse {
@@ -67,9 +62,8 @@ public class GenreController {
     }
 
     @GetMapping("/genres")
-    public ResponseEntity<List<Genre>> getAllPublishers(){
+    public ResponseEntity<List<Genre>> getAllGenres(){
         List<Genre> res = genreService.allGenres();
         return ResponseEntity.ok(res);
     }
-
 }

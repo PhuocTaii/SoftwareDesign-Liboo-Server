@@ -20,7 +20,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final Integer PAGE_SIZE = 20;
+    private final Integer PAGE_SIZE = 3; //20
     private final PasswordEncoder passwordEncoder;
 
 
