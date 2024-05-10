@@ -61,7 +61,7 @@ public class UserService {
         return userRepository.findByNameContainsAndRoleAndStatusAllIgnoreCase(query, Role.USER,false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
 
-    public Page<User> getAccounts(int pageNumber, String searchBy, String query, String sortBy){
+    public Page<User> getAccounts(int pageNumber, String searchBy, String query, String sortBy, String role){
         String sortField;
         boolean sortAsc = true;
 
@@ -80,10 +80,33 @@ public class UserService {
         }
         Sort sort = Sort.by(sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
 
-        if(searchBy.equals("") || query.equals("")) {
+        Role roleEnum;
+        if(role.equalsIgnoreCase("all"))
+            roleEnum = null;
+        else
+            roleEnum = Role.valueOf(role.toUpperCase());
+
+        if(searchBy.equals("") && roleEnum == null) {
             return userRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-        return userRepository.findByNameContainsIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        if(searchBy.equals("")) {
+            return userRepository.findByRole(roleEnum, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+
+        if(searchBy.equals("email") && roleEnum == null){
+            return userRepository.findByEmailContainsIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        if(searchBy.equals("email")) {
+            return userRepository.findByRoleAndEmailContainsAllIgnoreCase(roleEnum, query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+
+        if(searchBy.equals("name") && roleEnum == null){
+            return userRepository.findByNameContainsIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        if(searchBy.equals("name")) {
+            return userRepository.findByRoleAndNameContainsAllIgnoreCase(roleEnum, query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        return userRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
 
     public User getUserByID(Long id){
