@@ -51,10 +51,35 @@ public class TransactionController {
         public long totalItems;
     }
 
+//    @GetMapping("/librarian/all-transactions")
+//    public ResponseEntity<List<Transaction>> getAllTransaction(){
+//        List<Transaction> res = transactionService.getAllTransaction();
+//        return ResponseEntity.ok(res);
+//    }
     @GetMapping("/librarian/all-transactions")
-    public ResponseEntity<List<Transaction>> getAllTransaction(){
-        List<Transaction> res = transactionService.getAllTransaction();
-        return ResponseEntity.ok(res);
+    public ResponseEntity<TransactionListResponse> getAllTransactions(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "filter-by", required = false) String filterOption,
+            @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
+    )
+    {
+        Page<Transaction> res;
+        System.out.println("filterOption" + filterOption);
+        System.out.println("dateFrom" + dateFrom);
+        System.out.println("dateTo" + dateTo);
+
+        if(Objects.equals(filterOption, "") || dateFrom == null || dateTo == null)
+            res = transactionService.getAllTransaction(pageNumber);
+        else if(Objects.equals(filterOption, "borrow-date"))
+            res = transactionService.getTransactionByBorrowedDate(dateFrom, dateTo, pageNumber);
+        else if(Objects.equals(filterOption, "return-date"))
+            res = transactionService.getTransactionByReturnDate(dateFrom, dateTo, pageNumber);
+        else if(Objects.equals(filterOption, "due-date"))
+            res = transactionService.getTransactionByDueDate(dateFrom, dateTo, pageNumber);
+        else
+            res = transactionService.getAllTransaction(pageNumber);
+        return ResponseEntity.ok(new TransactionListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
     //Search by userId
@@ -83,6 +108,11 @@ public class TransactionController {
     {
         User user = authenticationService.getCurrentUser();
         Page<Transaction> res;
+
+        System.out.println("filterOption" + filterOption);
+        System.out.println("dateFrom" + dateFrom);
+        System.out.println("dateTo" + dateTo);
+
         if(Objects.equals(filterOption, "") || dateFrom == null || dateTo == null)
             res = transactionService.getTransactionByUser(user.getId(), pageNumber);
         else if(Objects.equals(filterOption, "borrow-date"))

@@ -32,20 +32,29 @@ public class ReservationService {
         return reservationRepository.save(res);
     }
 
-    public List<Reservation> getAllReservations(){
-        return reservationRepository.findAll();
-    }
 
     public Page<Reservation> getReservationsOfUser(Long userId, int pageNumber){
         return reservationRepository.findByUser_Id(userId, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public Page<Reservation> getAllReservations(int pageNumber){
+        return reservationRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public Page<Reservation> getReservationsOfUserByReserveDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
         return reservationRepository.findByUser_IdAndReservedDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
+    public Page<Reservation> getReservationsByReserveDate(LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return reservationRepository.findByReservedDateBetween(dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
     public Page<Reservation> getReservationsOfUserByPickupDate(Long userId, LocalDate dateFrom, LocalDate dateTo, int pageNumber){
         return reservationRepository.findByUser_IdAndPickupDateBetween(userId, dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
+    }
+
+    public Page<Reservation> getReservationsByPickupDate(LocalDate dateFrom, LocalDate dateTo, int pageNumber){
+        return reservationRepository.findByPickupDateBetween(dateFrom, dateTo, PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     public List<Reservation> getActiveReservationsByUser(Long userId){

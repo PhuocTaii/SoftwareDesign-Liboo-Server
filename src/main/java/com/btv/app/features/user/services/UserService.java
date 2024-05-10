@@ -53,12 +53,12 @@ public class UserService {
         Sort sort = Sort.by(sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
 
         if(searchBy.equals("") || query.equals("")) {
-            return userRepository.findByRole(Role.USER, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+            return userRepository.findByRoleAndStatusAllIgnoreCase(Role.USER, false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         if(searchBy.equals("email")){
-            return userRepository.findByRoleAndEmailContainsAllIgnoreCase(Role.USER, query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+            return userRepository.findByEmailContainsAndRoleAndStatusAllIgnoreCase(query, Role.USER, false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-        return userRepository.findByRoleAndNameContainsAllIgnoreCase(Role.USER, query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        return userRepository.findByNameContainsAndRoleAndStatusAllIgnoreCase(query, Role.USER,false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
 
     public Page<User> getAccounts(int pageNumber, String searchBy, String query, String sortBy){

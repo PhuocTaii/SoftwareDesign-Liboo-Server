@@ -127,7 +127,18 @@ public class BookController {
     }
 
     @GetMapping("admin/books")
-    public ResponseEntity<BookListResponse> getBooks(
+    public ResponseEntity<BookListResponse> getAdminBooks(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
+    ){
+        Page<Book> res = bookService.getAdminBooks(pageNumber, searchBy, query, sortBy);
+        return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+    }
+
+    @GetMapping("librarian/books")
+    public ResponseEntity<BookListResponse> getLibrarianBooks(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
@@ -151,5 +162,21 @@ public class BookController {
         }
         Book res = bookService.modifyBookStatus(book, status);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/user/books")
+    public ResponseEntity<BookListResponse> getBooks(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
+    ){
+        System.out.println("pageNumber = " + pageNumber);
+        System.out.println("searchBy = " + searchBy);
+        System.out.println("query = " + query);
+        System.out.println("sortBy = " + sortBy);
+
+        Page<Book> res = bookService.getBooks(pageNumber, searchBy, query, sortBy);
+        return ResponseEntity.ok(new BookListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 }

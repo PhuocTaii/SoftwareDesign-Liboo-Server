@@ -37,11 +37,11 @@ public class RenewalController {
         public long totalItems;
     }
 
-    @GetMapping("/librarian/renewals")
-    public ResponseEntity<RenewalListResponse> getRenewals(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
-        Page<Renewal> res = renewalService.getAllRenewals(pageNumber);
-        return ResponseEntity.ok(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
-    }
+//    @GetMapping("/librarian/renewals")
+//    public ResponseEntity<RenewalListResponse> getRenewals(@RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber){
+//        Page<Renewal> res = renewalService.getAllRenewals(pageNumber);
+//        return ResponseEntity.ok(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+//    }
     @GetMapping("/user/renewals")
     public ResponseEntity<RenewalListResponse> getRenewalsByUser(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
@@ -55,6 +55,20 @@ public class RenewalController {
             res = renewalService.getRenewalByUser(user, pageNumber);
         else
             res = renewalService.getRenewalByUserAndRequestDate(user, dateFrom, dateTo, pageNumber);
+        return ResponseEntity.ok(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+    }
+
+    @GetMapping("/librarian/renewals")
+    public ResponseEntity<RenewalListResponse> getAllRenewals(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
+    ){
+        Page<Renewal> res;
+        if(dateFrom == null || dateTo == null)
+            res = renewalService.getAllRenewals(pageNumber);
+        else
+            res = renewalService.getRenewalByRequestDate(dateFrom, dateTo, pageNumber);
         return ResponseEntity.ok(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 

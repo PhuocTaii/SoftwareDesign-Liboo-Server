@@ -25,4 +25,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     Page<Reservation> findByPickupDateAndStatusFalseAndUser_NameContainsIgnoreCase(LocalDate pickupDate, String name, Pageable pageable);
 
+    Page<Reservation> findByReservedDateBetween(LocalDate reservedDateStart, LocalDate reservedDateEnd, Pageable pageable);
+
+    Page<Reservation> findByPickupDateBetween(LocalDate pickupDateStart, LocalDate pickupDateEnd, Pageable pageable);
+
 }

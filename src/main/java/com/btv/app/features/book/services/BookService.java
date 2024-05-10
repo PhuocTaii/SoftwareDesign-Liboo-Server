@@ -106,7 +106,7 @@ public class BookService {
         return bookRepository.findByNameContainsAllIgnoreCase(name);
     }
 
-    public Page<Book> getBooks(int pageNumber, String searchBy, String query, String sortBy){
+    public Page<Book> getAdminBooks(int pageNumber, String searchBy, String query, String sortBy){
         String sortField;
         boolean sortAsc = true;
 
@@ -134,7 +134,7 @@ public class BookService {
         if(searchBy.equals("") || query.equals("")) {
             return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
-        if(searchBy.equals("isbn") || searchBy.equals("ISBN")){
+        if(searchBy.equals("ISBN")){
             return bookRepository.findByISBNContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         if(searchBy.equals("name")) {
@@ -150,6 +150,37 @@ public class BookService {
             return bookRepository.findByGenres_NameContainsAllIgnoreCase(query, PageRequest.of(pageNumber, PAGE_SIZE, sort));
         }
         return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, sort));
+    }
+
+    public Page<Book> getBooks(int pageNumber, String searchBy, String query, String sortBy){
+        String sortField;
+        boolean sortAsc = true;
+
+        switch (sortBy) {
+            case "borrowed-asc" -> sortField = "borrowed";
+            case "borrowed-desc" -> {
+                sortField = "borrowed";
+                sortAsc = false;
+            }
+            case "name-asc" -> sortField = "name";
+            case "name-desc" -> {
+                sortField = "name";
+                sortAsc = false;
+            }
+            default -> sortField = "id";
+        }
+        Sort sort = Sort.by(sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+
+        if(searchBy.equals("") || query.equals("")) {
+            return bookRepository.findByStatus(false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        if(searchBy.equals("isbn")){
+            return bookRepository.findByISBNContainsAndStatusAllIgnoreCase(query, false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        if(searchBy.equals("name")) {
+            return bookRepository.findByNameContainsAndStatusAllIgnoreCase(query, false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
+        }
+        return bookRepository.findByStatus(false, PageRequest.of(pageNumber, PAGE_SIZE, sort));
     }
 
     public Integer getNumberOfBooks() {

@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,5 +28,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findByNameContainsIgnoreCase(String name, Pageable pageable);
 
+    Page<User> findByRoleAndStatusAllIgnoreCase(Role role, Boolean status, Pageable pageable);
+
+    Page<User> findByEmailContainsAndRoleAndStatusAllIgnoreCase(String email, Role role, Boolean status, Pageable pageable);
+
+    Page<User> findByNameContainsAndRoleAndStatusAllIgnoreCase(String name, Role role, Boolean status, Pageable pageable);
 
 }

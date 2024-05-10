@@ -15,6 +15,9 @@ public interface BookRepository extends JpaRepository<Book, Long>{
 
     Page<Book> findAll(Pageable pageable);
 
+    Page<Book> findByStatus(Boolean status, Pageable pageable);
+
+
     Book findByISBN(String ISBN);
 
     List<Book> findByNameContainsAllIgnoreCase(String name);
@@ -35,7 +38,9 @@ public interface BookRepository extends JpaRepository<Book, Long>{
 
     Page<Book> findByGenres_NameContainsAllIgnoreCase(String name, Pageable pageable);
 
+    Page<Book> findByISBNContainsAndStatusAllIgnoreCase(String ISBN, Boolean status, Pageable pageable);
 
-//    Page<Book> findByGenres_NameInAllIgnoreCase(String names, Pageable pageable);
+    Page<Book> findByNameContainsAndStatusAllIgnoreCase(String name, Boolean status, Pageable pageable);
+
 
 }
