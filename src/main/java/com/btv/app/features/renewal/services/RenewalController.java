@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("api")
@@ -28,6 +25,19 @@ public class RenewalController {
     private final RenewalService renewalService;
     private final TransactionBookService transactionBookService;
     private final AuthenticationService authenticationService;
+
+    @AllArgsConstructor
+    public static class LibrarianObjects{
+        public Renewal renewal;
+        public User user;
+    }
+    @AllArgsConstructor
+    public static class LibrarianRenewalListResponse {
+        public List<LibrarianObjects> objectsList;
+        public int pageNumber;
+        public int totalPages;
+        public long totalItems;
+    }
 
     @AllArgsConstructor
     public static class RenewalListResponse {
@@ -59,17 +69,25 @@ public class RenewalController {
     }
 
     @GetMapping("/librarian/renewals")
-    public ResponseEntity<RenewalListResponse> getAllRenewals(
+    public ResponseEntity<LibrarianRenewalListResponse> getAllRenewals(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "from", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateFrom,
             @RequestParam(value = "to", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate dateTo
     ){
         Page<Renewal> res;
+        System.out.println("dateFrom" + dateFrom);
+        System.out.println("dateTo" + dateTo);
         if(dateFrom == null || dateTo == null)
             res = renewalService.getAllRenewals(pageNumber);
         else
             res = renewalService.getRenewalByRequestDate(dateFrom, dateTo, pageNumber);
-        return ResponseEntity.ok(new RenewalListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
+        System.out.println("res" + res.getContent().getFirst().getTransactionBook().getBook().getName());
+        LibrarianRenewalListResponse renewals = new LibrarianRenewalListResponse(new ArrayList<>(), res.getNumber(), res.getTotalPages(), res.getTotalElements());
+        for(Renewal renewal : res.getContent()) {
+            LibrarianObjects librarianObjects = new LibrarianObjects(renewal, renewal.getTransactionBook().getTransaction().getUser());
+            renewals.objectsList.add(librarianObjects);
+        }
+        return ResponseEntity.ok(renewals);
     }
 
     @PostMapping("/user/request-renewal")

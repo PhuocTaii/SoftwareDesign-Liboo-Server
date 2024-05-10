@@ -80,11 +80,11 @@ public class AuthenticationController {
 
 
     @PostMapping("/refresh-token")
-    public void refreshToken(
+    public AuthenticationResponse refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-        authenticationService.refreshToken(request, response);
+        return authenticationService.refreshToken(request, response);
     }
 
     @PostMapping("/logout")

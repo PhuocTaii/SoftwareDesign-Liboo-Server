@@ -69,9 +69,10 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "search-by", required = false, defaultValue = "") String searchBy,
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
-            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
+            @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy,
+            @RequestParam(value = "role", required = false, defaultValue = "all") String role
     ){
-        Page<User> res = userService.getAccounts(pageNumber, searchBy, query, sortBy);
+        Page<User> res = userService.getAccounts(pageNumber, searchBy, query, sortBy, role);
         return ResponseEntity.ok(new UserController.UserListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }
 
@@ -159,7 +160,7 @@ public class UserController {
     }
 
     @GetMapping("/admin/registration-by-year")
-    public ResponseEntity<List<Integer>> getUserAmountByYear(@Param("year") Integer year){
+    public ResponseEntity<List<Integer>> getUserAmountByYear(@RequestParam  ("year") Integer year){
         List<Integer> res = userService.getUserByYear(year);
         return ResponseEntity.ok(res);
     }

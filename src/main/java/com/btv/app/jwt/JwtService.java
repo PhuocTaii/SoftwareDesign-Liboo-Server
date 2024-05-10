@@ -22,8 +22,8 @@ public class JwtService {
 
     static Dotenv dotenv = Dotenv.load();
     private static final String JWT_SECRET = dotenv.get("JWT_SECRET");
-    private static final long JWT_EXPIRATION = 86400000;
-
+//    private static final long JWT_EXPIRATION = 86400000;
+    private static final long JWT_EXPIRATION = 1000 * 10;
     private static final long REFRESH_EXPIRATION = 86400000 * 7;
 
     public String extractUsername(String token) {

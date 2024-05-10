@@ -18,7 +18,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class BookService {
-    private final Integer PAGE_SIZE = 3; //10
+    private final Integer PAGE_SIZE = 10;
     private final BookRepository bookRepository;
     public Page<Book> getAllBooks(int pageNumber) {
         return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));

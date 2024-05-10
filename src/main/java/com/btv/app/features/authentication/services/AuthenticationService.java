@@ -168,7 +168,7 @@ public class AuthenticationService {
         throw new MyException(HttpStatus.NOT_FOUND, "User not found!");
     }
 
-    public void refreshToken(
+    public AuthenticationResponse refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
@@ -176,7 +176,7 @@ public class AuthenticationService {
         final String refreshToken;
         final String userEmail;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
+            return null;
         }
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
@@ -187,10 +187,12 @@ public class AuthenticationService {
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
+                        .user(getCurrentUser())
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+                return authResponse;
             }
         }
+        return null;
     }
 
     public void logout(
