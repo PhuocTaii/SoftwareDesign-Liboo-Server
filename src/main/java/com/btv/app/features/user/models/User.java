@@ -4,7 +4,9 @@ package com.btv.app.features.user.models;
 import com.btv.app.features.image.Image;
 import com.btv.app.features.membership.model.Membership;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +31,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "password", nullable = false)
+    @Size(min = 8, max = 255)
     private String password;
 
     @Column(name = "name", nullable = false, columnDefinition = "nvarchar(255)")
