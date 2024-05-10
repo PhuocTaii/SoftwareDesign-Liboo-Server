@@ -160,7 +160,7 @@ public class UserController {
     }
 
     @GetMapping("/admin/registration-by-year")
-    public ResponseEntity<List<Integer>> getUserAmountByYear(@Param("year") Integer year){
+    public ResponseEntity<List<Integer>> getUserAmountByYear(@RequestParam  ("year") Integer year){
         List<Integer> res = userService.getUserByYear(year);
         return ResponseEntity.ok(res);
     }
