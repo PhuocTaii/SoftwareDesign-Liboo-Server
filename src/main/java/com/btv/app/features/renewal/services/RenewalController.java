@@ -81,7 +81,6 @@ public class RenewalController {
             res = renewalService.getAllRenewals(pageNumber);
         else
             res = renewalService.getRenewalByRequestDate(dateFrom, dateTo, pageNumber);
-        System.out.println("res" + res.getContent().getFirst().getTransactionBook().getBook().getName());
         LibrarianRenewalListResponse renewals = new LibrarianRenewalListResponse(new ArrayList<>(), res.getNumber(), res.getTotalPages(), res.getTotalElements());
         for(Renewal renewal : res.getContent()) {
             LibrarianObjects librarianObjects = new LibrarianObjects(renewal, renewal.getTransactionBook().getTransaction().getUser());
