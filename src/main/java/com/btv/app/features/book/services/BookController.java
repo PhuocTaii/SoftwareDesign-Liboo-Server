@@ -4,21 +4,17 @@ import com.btv.app.cloudinary.CloudinaryService;
 import com.btv.app.exception.MyException;
 import com.btv.app.features.book.model.Book;
 import com.btv.app.features.image.Image;
-import com.btv.app.features.transaction.models.Transaction;
-import com.btv.app.features.user.models.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("api")
@@ -54,20 +50,45 @@ public class BookController {
     }
 
     @PostMapping("/admin/add-book")
-    public ResponseEntity<Book> addBook(@ModelAttribute Book book){
-        if(bookService.getBookByISBN(book.getISBN()) != null)
+    public ResponseEntity<Book> addBook(@RequestParam("uploadedImage") MultipartFile file, @RequestParam("book") String bookString) throws JsonProcessingException {
+        // convert JSON string to Book object
+        ObjectMapper mapper = new ObjectMapper();
+        Book book = mapper.readValue(bookString, Book.class);
+
+        if(bookService.existsByISBN(book.getISBN()))
             throw new MyException(HttpStatus.CONFLICT, "This book is existed");
+
+        Map data = cloudinaryService.upload(file);
+        if(data == null){
+            throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload image failed");
+        }
+        Image image = new Image(data.get("public_id").toString(), data.get("secure_url").toString());
+        book.setImage(image);
 
         Book res = bookService.addBook(book);
         return ResponseEntity.ok(res);
     }
 
     @PutMapping("/admin/modify-book/{id}")
-    public ResponseEntity<Book> modifyBook(@PathVariable("id") Long id, @ModelAttribute Book book){
+    public ResponseEntity<Book> modifyBook(@PathVariable("id") Long id, @RequestParam(value = "uploadedImage", required = false) MultipartFile file, @RequestParam("book") String bookString) throws JsonProcessingException{
         Book curBook = bookService.getBookByID(id);
         if(curBook == null){
-            return ResponseEntity.status(404).build();
+            throw new MyException(HttpStatus.NOT_FOUND, "Book not found");
         }
+
+        // convert JSON string to Book object
+        ObjectMapper mapper = new ObjectMapper();
+        Book book = mapper.readValue(bookString, Book.class);
+
+        if(file != null){
+            Map data = cloudinaryService.upload(file);
+            if(data == null){
+                throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload image failed");
+            }
+            Image image = new Image(data.get("public_id").toString(), data.get("secure_url").toString());
+            book.setImage(image);
+        }
+
         Book tmp = bookService.modifyBook(curBook, book);
         return ResponseEntity.ok(tmp);
     }

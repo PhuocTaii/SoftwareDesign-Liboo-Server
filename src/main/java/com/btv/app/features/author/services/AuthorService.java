@@ -2,15 +2,10 @@ package com.btv.app.features.author.services;
 
 import com.btv.app.features.author.model.Author;
 import com.btv.app.features.book.services.BookService;
-import com.btv.app.features.publisher.model.Publisher;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +18,7 @@ public class AuthorService {
     private final BookService bookService;
     private final Integer PAGE_SIZE = 5;
 
-    public Page<Author> getAllAuthors(int pageNumber) {
+    public Page<Author> getAuthors(int pageNumber) {
         return authorRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").ascending()));
     }
 
@@ -50,4 +45,7 @@ public class AuthorService {
         return authorRepository.findByName(name);
     }
 
+    public List<Author> allAuthors(){
+        return authorRepository.findAll();
+    }
 }

@@ -18,7 +18,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class BookService {
-    private final Integer PAGE_SIZE = 10;
+    private final Integer PAGE_SIZE = 3; //10
     private final BookRepository bookRepository;
     public Page<Book> getAllBooks(int pageNumber) {
         return bookRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE, Sort.by("id").descending()));
@@ -30,11 +30,13 @@ public class BookService {
     }
 
     public Book addBook(Book book){
-        if(bookRepository.existsByISBN(book.getISBN())){
-            throw new DataIntegrityViolationException("Book already exists");
-        }
         return bookRepository.save(book);
     }
+
+    public boolean existsByISBN(String ISBN){
+        return bookRepository.existsByISBN(ISBN);
+    }
+
     public void deleteBook(Long id){
         bookRepository.deleteById(id);
     }
