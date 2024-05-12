@@ -32,6 +32,10 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<AuthenticationResponse> signup(@RequestBody RegisterRequest request){
+        if(request.getPassword().length() < 8)
+            throw new MyException(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters");
+        if(request.getPassword().length() > 255)
+            throw new MyException(HttpStatus.BAD_REQUEST, "Password is too long");
         if(userService.getUserByEmail(request.getEmail()) != null)
             throw new MyException(HttpStatus.CONFLICT, "This email is being used ");
         else if(userService.getUserByIdentifier(request.getIdentifier()) != null)
