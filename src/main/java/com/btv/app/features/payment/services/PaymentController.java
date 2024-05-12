@@ -20,7 +20,9 @@ public class PaymentController {
                               @RequestParam("orderInfo") String orderInfo,
                               HttpServletRequest request){
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        System.out.println(baseUrl);
         String vnpayUrl = paymentService.createOrder(request, orderTotal, orderInfo, baseUrl);
+        System.out.println(vnpayUrl);
         return vnpayUrl;
     }
 
