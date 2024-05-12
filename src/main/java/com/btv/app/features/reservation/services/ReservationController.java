@@ -181,7 +181,7 @@ public class ReservationController {
             String message = "You have already reserved these books : " + announcements;
             throw new MyException(HttpStatus.BAD_REQUEST, message);
         }
-        if(cnt.equals(membership.getMaxBook())){
+        if(cnt.equals(membership.getReserve())){
             String message = "You are not allowed to reserve more than " + membership.getReserve() + " books";
             throw new MyException(HttpStatus.BAD_REQUEST, message);
         }
@@ -209,7 +209,6 @@ public class ReservationController {
         for(Book b:books)
             bookService.increaseBookBorrowed(b);
 
-        userService.decreaseAvailableBorrow(user, books.size());
         return ResponseEntity.ok(res);
     }
 
