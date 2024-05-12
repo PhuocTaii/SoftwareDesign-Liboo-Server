@@ -14,22 +14,12 @@ public class PaymentController {
 
     private PaymentService paymentService;
 
-    // Chuyển hướng người dùng đến cổng thanh toán VNPAY
     @PostMapping("/submitOrder")
     public String submitOrder(@RequestParam("amount") int orderTotal,
                               @RequestParam("orderInfo") String orderInfo,
                               HttpServletRequest request){
-//        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-//        String baseUrl =  "http://softwaredesign-liboo-server-production.up.railway.app:8002";
-
-        String baseUrl = "https://softwaredesign-liboo-server-production.up.railway.app";
-        System.out.println(request.getServerPort());
-        System.out.println(baseUrl);
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         String vnpayUrl = paymentService.createOrder(request, orderTotal, orderInfo, baseUrl);
-        System.out.println(vnpayUrl);
         return vnpayUrl;
     }
-
-    // Sau khi hoàn tất thanh toán, VNPAY sẽ chuyển hướng trình duyệt về URL này
-
 }
