@@ -23,6 +23,7 @@ public class PaymentController {
 //        String baseUrl =  "http://softwaredesign-liboo-server-production.up.railway.app:8002";
         System.out.println(request.getServerPort());
         System.out.println(baseUrl);
+        String baseUrl = "https://softwaredesign-liboo-server-production.up.railway.app";
         String vnpayUrl = paymentService.createOrder(request, orderTotal, orderInfo, baseUrl);
         System.out.println(vnpayUrl);
         return vnpayUrl;
