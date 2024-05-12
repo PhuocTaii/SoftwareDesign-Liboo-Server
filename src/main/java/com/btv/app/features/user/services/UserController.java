@@ -42,6 +42,9 @@ public class UserController {
     @GetMapping("/admin/all-users")
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> res = userService.getAllUsers();
+        if(auth.getCurrentUser().getStatus()){
+            throw new MyException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this resource");
+        }
         if(res == null)
             throw new MyException(HttpStatus.NOT_FOUND, "No user found");
         return ResponseEntity.ok(res);
@@ -49,6 +52,12 @@ public class UserController {
 
     @GetMapping("/admin/all-readers-amount")
     public ResponseEntity<Long> getAllReadersAmount(){
+        if(auth.getCurrentUser().getStatus()){
+            throw new MyException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this resource");
+        }
+        if(auth.getCurrentUser().getStatus()){
+            throw new MyException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this resource");
+        }
         long res = userService.getNumberOfReaders();
         return ResponseEntity.ok(res);
     }
@@ -60,6 +69,9 @@ public class UserController {
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
             @RequestParam(value = "sort-by", required = false, defaultValue = "") String sortBy
     ){
+        if(auth.getCurrentUser().getStatus()){
+            throw new MyException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this resource");
+        }
         Page<User> res = userService.getReaders(pageNumber, searchBy, query, sortBy);
         return ResponseEntity.ok(new UserController.UserListResponse(res.getContent(), res.getNumber(), res.getTotalPages(), res.getTotalElements()));
     }

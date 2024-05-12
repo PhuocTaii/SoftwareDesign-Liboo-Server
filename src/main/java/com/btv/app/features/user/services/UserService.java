@@ -159,6 +159,7 @@ public class UserService {
 
     public User modifyUserStatus(User user, Boolean status){
         user.setStatus(status);
+
         return userRepository.save(user);
     }
 
