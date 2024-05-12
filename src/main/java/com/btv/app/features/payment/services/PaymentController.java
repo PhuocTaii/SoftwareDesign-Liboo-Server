@@ -14,7 +14,6 @@ public class PaymentController {
 
     private PaymentService paymentService;
 
-    // Chuyển hướng người dùng đến cổng thanh toán VNPAY
     @PostMapping("/submitOrder")
     public String submitOrder(@RequestParam("amount") int orderTotal,
                               @RequestParam("orderInfo") String orderInfo,
@@ -23,7 +22,4 @@ public class PaymentController {
         String vnpayUrl = paymentService.createOrder(request, orderTotal, orderInfo, baseUrl);
         return vnpayUrl;
     }
-
-    // Sau khi hoàn tất thanh toán, VNPAY sẽ chuyển hướng trình duyệt về URL này
-
 }
